@@ -1,0 +1,100 @@
+package pers.ccy.hs.UI
+
+import pers.ccy.hs.data.WindowDoorData
+import pers.ccy.hs.operation.Op.Add
+import java.awt.event.*
+import javax.swing.*
+
+class JPanel_Door(windowDoorData: WindowDoorData, modelCB: DefaultComboBoxModel<String>) : JPanel(), ActionListener {
+    val label = arrayOf(
+        arrayOf(JLabel("门所在墙："), JLabel("离墙边距离："), JLabel("门宽度："), JLabel("门高度：")),
+        arrayOf(JLabel("门所在墙："), JLabel("离墙边角度："), JLabel("门角度："), JLabel("门高度："))
+    )
+    val label2 = arrayOf(
+        arrayOf(JLabel("单位"), JLabel("单位"), JLabel("单位")),
+        arrayOf(JLabel("单位"), JLabel("单位"), JLabel("单位"))
+    )
+    val cmb: JComboBox<String> = JComboBox<String>()
+    val txtfield = arrayOf(JTextField(28), JTextField(28), JTextField(28))
+    val jbtn = JButton("确定")
+
+    override fun actionPerformed(e: ActionEvent) {}
+
+    init {
+        this.layout = null
+        this.border = (BorderFactory.createTitledBorder("选择"))
+
+        cmb.model = modelCB
+        cmb.setBounds(80, 15, 100, 30)
+        this.add(cmb)
+        cmb.addItemListener(ItemListener { e ->
+            if (e.stateChange == ItemEvent.SELECTED) {
+                val strArr = cmb.selectedItem.toString().split(",")
+                if (strArr[1] == "2") {
+                    label[0].forEach { it.isVisible = false }
+                    label[1].forEach { it.isVisible = true }
+                    label2[0].forEach { it.isVisible = false }
+                    label2[1].forEach { it.isVisible = true }
+                } else {
+                    label[0].forEach { it.isVisible = true }
+                    label[1].forEach { it.isVisible = false }
+                    label2[0].forEach { it.isVisible = true }
+                    label2[1].forEach { it.isVisible = false }
+                }
+            }
+        })
+
+        label.forEach {
+            it.forEachIndexed { index, it ->
+                it.setBounds(5, 15 + index * 30, 75, 30)
+                this.add(it)
+            }
+        }
+        label2.forEach {
+            it.forEachIndexed { index, it ->
+                it.setBounds(155, 45 + index * 30, 30, 30)
+                this.add(it)
+            }
+        }
+
+        jbtn.setBounds(70, 210, 60, 30)
+        this.add(jbtn)
+        jbtn.addActionListener(ActionListener {
+            txtfield[0].text.toDoubleOrNull()?.let { it1 ->
+                txtfield[1].text.toDoubleOrNull()?.let { it2 ->
+                    txtfield[2].text.toDoubleOrNull()?.let { it3 ->
+                        val str = cmb.selectedItem.toString()
+                        Add(
+                            windowDoorData, WindowDoorData(
+                                ++windowDoorData.id, str.substring(0, str.indexOf(',')).toInt(), 0,
+                                it1, it2, it3
+                            )
+                        )
+                    }
+                }
+            }
+            windowDoorData.UpdatModel()
+        })
+
+        txtfield.forEachIndexed { index, it ->
+            it.setBounds(80, 45 + index * 30, 75, 30)
+            this.add(it)
+            it.addKeyListener(object : KeyListener {
+                override fun keyTyped(e: KeyEvent?) {
+                    val keyChar = e!!.keyChar
+                    if (keyChar >= '0' && keyChar <= '9' || keyChar.toInt() == 8) {
+                    } else if (keyChar == '.') {
+                        if (it.text.contains('.')) {
+                            e.consume()
+                        }
+                    } else {
+                        e.consume()
+                    }
+                }
+
+                override fun keyPressed(e: KeyEvent?) {}
+                override fun keyReleased(e: KeyEvent?) {}
+            })
+        }
+    }
+}
