@@ -7,8 +7,10 @@ import pers.ccy.hs.UI.StructureUI
 import pers.ccy.hs.data.HouseData
 import pers.ccy.hs.data.WindowDoorData
 import pers.ccy.hs.operation.MyFileFilter
-import pers.ccy.hs.operation.Op.Add
-import pers.ccy.hs.operation.Op.RemoveAll
+import pers.ccy.hs.operation.OpFile.open
+import pers.ccy.hs.operation.OpFile.save
+import pers.ccy.hs.operation.OpFile.save_before
+import pers.ccy.hs.operation.OpPainting.Add
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
 import java.awt.event.KeyEvent.*
@@ -17,13 +19,7 @@ import javax.swing.*
 
 
 class Main : ActionListener {
-
-    private val modelWD = DefaultListModel<String>()
-    private var windowDoorData = WindowDoorData(modelWD)
-
-    private val model = DefaultListModel<String>()
-    private val modelCB = DefaultComboBoxModel<String>()
-    private var houseData = HouseData(model, modelCB, windowDoorData)
+    private var houseData = HouseData()
 
     private var select = 0
     var file: File? = null
@@ -32,7 +28,7 @@ class Main : ActionListener {
 
 
     private val jf = JFrame()
-    private val jpStructureUI = StructureUI(houseData, windowDoorData, model, modelCB, modelWD)
+    private val jpStructureUI = StructureUI(houseData)
     private val jpCombinationUI = CombinationUI()
     private val menuBar = JMenuBar()
     private val fileMenu = JMenu("文件")
@@ -45,7 +41,9 @@ class Main : ActionListener {
     override fun actionPerformed(e: ActionEvent?) {
         val menuItem = e?.source as JMenuItem
         when (menuItem.text) {
-            "新建（N）" ->{}
+            "新建（N）" -> {
+                new()
+            }
             "打开（O）" -> {
                 val state = jfc.showOpenDialog(null) // 此句是打开文件选择器界面的触发语句
 
@@ -54,11 +52,12 @@ class Main : ActionListener {
                 } else {
                     val f = jfc.selectedFile // f为选择到的文件
                     newFile(f)
-                    open()
+                    new()
+                    open(f, houseData)
                 }
             }
             "保存（S）" -> {
-                if (save_before()) {
+                if (save_before(houseData, jf)) {
                     if (file == null) {
                         val state = jfc.showSaveDialog(null) // 此句是打开文件选择器界面的触发语句
 
@@ -67,15 +66,15 @@ class Main : ActionListener {
                         } else {
                             val f = jfc.selectedFile // f为选择到的文件
                             newFile(f)
-                            save()
+                            save(houseData,file!!)
                         }
                     } else {
-                        save()
+                        save(houseData,file!!)
                     }
                 }
             }
             "另存为" -> {
-                if (save_before()) {
+                if (save_before(houseData, jf)) {
                     jfc.setDialogTitle("另存为")
                     val state = jfc.showSaveDialog(null) // 此句是打开文件选择器界面的触发语句
 
@@ -84,11 +83,14 @@ class Main : ActionListener {
                     } else {
                         val f = jfc.selectedFile // f为选择到的文件
                         newFile(f)
-                        save()
+                        save(houseData,file!!)
                     }
                 }
             }
         }
+
+        houseData.UpdatModel()
+        jf.repaint()
     }
 
     fun newFile(f: File) {
@@ -96,7 +98,6 @@ class Main : ActionListener {
         if (f.absolutePath.toUpperCase().endsWith(ends.toUpperCase())) {
             // 如果文件是以选定扩展名结束的，则使用原名
             file = f
-
         } else {
             // 否则加上选定的扩展名
             file = File(f.absolutePath + ends);
@@ -107,82 +108,8 @@ class Main : ActionListener {
             jpCombinationUI.jp1.jrba[1].isSelected = true
     }
 
-    fun open() {
-        val readText = file!!.readLines()
-        var i = 0
-        RemoveAll(houseData)
-        RemoveAll(windowDoorData)
-        for (element in 0 until readText.size) {
-            val strArr = readText[element].split(",")
-            if (strArr[1] == "0" && element > 0) {
-                i = element
-                break
-            } else {
-                if (element != 0)
-                    Add(
-                        houseData, HouseData(
-                            strArr[0].toInt(),
-                            strArr[1].toInt(),
-                            strArr[2].toInt(),
-                            strArr[3].toDouble(),
-                            strArr[4].toDouble(),
-                            strArr[5].toDouble(),
-                            strArr[6].toDouble()
-                        )
-                    )
-                else
-                    houseData.id = strArr[0].toInt()
-            }
-        }
-        houseData.UpdatModel()
-
-        for (element in i until readText.size) {
-            val strArr = readText[element].split(",")
-            if (element == i)
-                windowDoorData.id = strArr[0].toInt()
-            else
-                Add(
-                    windowDoorData, WindowDoorData(
-                        strArr[0].toInt(),
-                        strArr[1].toInt(),
-                        strArr[2].toInt(),
-                        strArr[3].toDouble(),
-                        strArr[4].toDouble(),
-                        strArr[5].toDouble(),
-                        strArr[6].toDouble()
-                    )
-                )
-        }
-        windowDoorData.UpdatModel()
-        jf.repaint()
-    }
-
-    fun save() {
-        file!!.writeText("")
-        var str = houseData.allToString()
-        for (i in str)
-            file!!.appendText("$i\n")
-        str = windowDoorData.allToString()
-        for (i in str)
-            file!!.appendText("$i\n")
-    }
-
-    fun save_before(): Boolean {
-        var now = windowDoorData
-        while (now.next != null) {
-            if (now.next!!.type == 0)
-                return true
-            now = now.next!!
-        }
-        val worr = JOptionPane.showOptionDialog(
-            jf,
-            "房间没有门",
-            "房间没有门",
-            JOptionPane.OK_CANCEL_OPTION,
-            JOptionPane.WARNING_MESSAGE,
-            null, arrayOf("取消保存", "继续保存"), "取消保存"
-        )
-        return worr == 1
+    fun new() {
+        houseData.RemoveAll()
     }
 
     companion object {
@@ -193,8 +120,6 @@ class Main : ActionListener {
     }
 
     init {
-        windowDoorData.houseData = houseData
-
         jf.title = "房屋拼接系统"
         jf.layout = XYLayout()
         jf.setBounds(100, 100, 1000, 410)

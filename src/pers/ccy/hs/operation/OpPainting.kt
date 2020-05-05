@@ -6,7 +6,7 @@ import java.lang.Math.*
 import javax.swing.JPanel
 import kotlin.math.pow
 
-object Op {
+object OpPainting {
     fun DisplayHiding(i: Int, vararg args: JPanel) {
         for (j in 0..args.size - 1)
             args[j].isVisible = false
@@ -90,7 +90,7 @@ object Op {
         var hd = houseData
         while (hd.next != null) {
             if (hd.next!!.next == null) {
-                houseData.windowDoorData?.let { Remove_idl(it, hd.next!!.id) }
+                hd.windowDoorData?.let { it.RemoveAll() }
                 hd.next = null
                 return
             }
@@ -100,9 +100,9 @@ object Op {
 
     fun Remove(houseData: HouseData, i: Int) {
         var hd = houseData
-        houseData.windowDoorData?.let { Remove_idl(it, i) }
         while (hd.next != null) {
             if (hd.next!!.id == i) {
+                hd.windowDoorData?.let { it.RemoveAll() }
                 var t = hd.next
                 hd.next = hd.next!!.next
                 t = null
@@ -176,10 +176,6 @@ object Op {
         now.next = add
     }
 
-    fun RemoveAll(houseData: HouseData) {
-        while (houseData.next != null) Remove(houseData)
-    }
-
     fun Remove(windowDoorData: WindowDoorData) {
         var wdd = windowDoorData
         while (wdd.next != null) {
@@ -191,56 +187,64 @@ object Op {
         }
     }
 
-    fun Remove(windowDoorData: WindowDoorData, i: Int) {
-        var wdd = windowDoorData
-        while (wdd.next != null) {
-            if (wdd.next!!.id == i) {
-                var t = wdd.next
-                wdd.next = wdd.next!!.next
-                t = null
-                return
+    fun RemoveWD(houseData: HouseData, i: Int) {
+        var hd = houseData
+        while (hd.next != null) {
+            if (hd.windowDoorData != null) {
+                if(hd.windowDoorData!!.id == i){
+                    hd.windowDoorData = hd.windowDoorData!!.next
+                    return
+                }
+                var wdd = hd.windowDoorData
+                while (wdd != null) {
+                    if (wdd.next!!.id == i) {
+                        wdd.next = wdd.next!!.next
+                        return
+                    }
+                    wdd = wdd.next!!
+                }
             }
-            wdd = wdd.next!!
+            hd = hd.next!!
         }
     }
 
-    fun Remove_idl(windowDoorData: WindowDoorData, i: Int) {
-        var wdd = windowDoorData
-        while (wdd.next != null) {
-            if (wdd.next!!.id_l == i) {
-                var t = wdd.next
-                wdd.next = wdd.next!!.next
-                t = null
-                continue
+    fun SelectWD(houseData: HouseData, i: Int): String {
+        var hd:HouseData? = houseData
+        while (hd != null) {
+            if (hd.windowDoorData != null) {
+                var wdd = hd.windowDoorData
+                while (wdd != null) {
+                    if (wdd.id == i) {
+                        return wdd.toString()
+                    }
+                    wdd = wdd.next!!
+                }
             }
-            wdd = wdd.next!!
-        }
-    }
-
-    fun Select(windowDoorData: WindowDoorData, i: Int): String {
-        var wdd = windowDoorData
-        while (wdd.next != null) {
-            if (wdd.next!!.id == i) {
-                return wdd.next.toString()
-            }
-            wdd = wdd.next!!
+            hd = hd.next
         }
         return ""
     }
 
-    fun WDD_Update(windowDoorData: WindowDoorData, i: Int, str: String) {
-        var wdd = windowDoorData
+    fun WDD_Update(houseData: HouseData, i: Int, str: String) {
         val strArr = str.split(",")
-        while (wdd.next != null) {
-            if (wdd.next!!.id == i) {
-                wdd.next!!.id_l = strArr[1].toInt()
-                wdd.next!!.type = strArr[2].toInt()
-                wdd.next!!.info = strArr[3].toDouble()
-                wdd.next!!.info2 = strArr[4].toDouble()
-                wdd.next!!.info3 = strArr[5].toDouble()
-                wdd.next!!.info4 = strArr[6].toDouble()
+        var hd:HouseData? = houseData
+        while (hd != null) {
+            if (hd.windowDoorData != null) {
+                var wdd = hd.windowDoorData
+                while (wdd != null) {
+                    if (wdd.id == i) {
+                        wdd.type = strArr[1].toInt()
+                        wdd.thick = strArr[2].toDouble()
+                        wdd.info = strArr[3].toDouble()
+                        wdd.info2 = strArr[4].toDouble()
+                        wdd.info3 = strArr[5].toDouble()
+                        wdd.info4 = strArr[6].toDouble()
+                        return
+                    }
+                    wdd = wdd.next!!
+                }
             }
-            wdd = wdd.next!!
+            hd = hd.next
         }
     }
 
@@ -248,10 +252,6 @@ object Op {
         var now = windowDoorData
         while (now.next != null) now = now.next!!
         now.next = add
-    }
-
-    fun RemoveAll(windowDoorData: WindowDoorData) {
-        while (windowDoorData.next != null) Remove(windowDoorData)
     }
 
     fun getDis(x1: Double, y1: Double, x2: Double, y2: Double): Double =

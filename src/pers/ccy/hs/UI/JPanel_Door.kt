@@ -1,30 +1,30 @@
 package pers.ccy.hs.UI
 
+import pers.ccy.hs.data.HouseData
 import pers.ccy.hs.data.WindowDoorData
-import pers.ccy.hs.operation.Op.Add
 import java.awt.event.*
 import javax.swing.*
 
-class JPanel_Door(windowDoorData: WindowDoorData, modelCB: DefaultComboBoxModel<String>) : JPanel(), ActionListener {
+class JPanel_Door(houseData: HouseData) : JPanel(), ActionListener {
     val label = arrayOf(
-        arrayOf(JLabel("门所在墙："), JLabel("离墙边距离："), JLabel("门宽度："), JLabel("门高度：")),
-        arrayOf(JLabel("门所在墙："), JLabel("离墙边角度："), JLabel("门角度："), JLabel("门高度："))
+        arrayOf(JLabel("门所在墙："), JLabel("门的厚度："), JLabel("离墙边距离："), JLabel("门宽度："), JLabel("门高度：")),
+        arrayOf(JLabel("门所在墙："), JLabel("门的厚度："), JLabel("离墙边角度："), JLabel("门角度："), JLabel("门高度："))
     )
     val label2 = arrayOf(
-        arrayOf(JLabel("单位"), JLabel("单位"), JLabel("单位")),
-        arrayOf(JLabel("单位"), JLabel("单位"), JLabel("单位"))
+        arrayOf(JLabel("单位"), JLabel("单位"), JLabel("单位"), JLabel("单位")),
+        arrayOf(JLabel("单位"), JLabel("单位"), JLabel("单位"), JLabel("单位"))
     )
     val cmb: JComboBox<String> = JComboBox<String>()
-    val txtfield = arrayOf(JTextField(28), JTextField(28), JTextField(28))
+    val txtfield = arrayOf(JTextField(28), JTextField(28), JTextField(28), JTextField(28))
     val jbtn = JButton("确定")
 
-    override fun actionPerformed(e: ActionEvent) {}
+    override fun actionPerformed(e: ActionEvent) {  }
 
     init {
         this.layout = null
         this.border = (BorderFactory.createTitledBorder("选择"))
 
-        cmb.model = modelCB
+        cmb.model = HouseData.modelCB
         cmb.setBounds(80, 15, 100, 30)
         this.add(cmb)
         cmb.addItemListener(ItemListener { e ->
@@ -63,17 +63,20 @@ class JPanel_Door(windowDoorData: WindowDoorData, modelCB: DefaultComboBoxModel<
             txtfield[0].text.toDoubleOrNull()?.let { it1 ->
                 txtfield[1].text.toDoubleOrNull()?.let { it2 ->
                     txtfield[2].text.toDoubleOrNull()?.let { it3 ->
-                        val str = cmb.selectedItem.toString()
-                        Add(
-                            windowDoorData, WindowDoorData(
-                                ++windowDoorData.id, str.substring(0, str.indexOf(',')).toInt(), 0,
-                                it1, it2, it3
+                        txtfield[3].text.toDoubleOrNull()?.let { it4 ->
+                            val str = cmb.selectedItem.toString()
+                            houseData.Search(str.substring(0, str.indexOf(',')).toInt()).Add(
+                                WindowDoorData(
+                                    ++WindowDoorData.number, 0,
+                                    it1, it2, it3, it4
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
-            windowDoorData.UpdatModel()
+            houseData.UpdatModel()
+            this.parent.repaint()
         })
 
         txtfield.forEachIndexed { index, it ->

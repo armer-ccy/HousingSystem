@@ -1,17 +1,17 @@
 package pers.ccy.hs.UI
 
 import pers.ccy.hs.data.HouseData
-import pers.ccy.hs.operation.Op.MoveDown
-import pers.ccy.hs.operation.Op.MoveUp
-import pers.ccy.hs.operation.Op.Remove
+import pers.ccy.hs.operation.OpPainting.MoveDown
+import pers.ccy.hs.operation.OpPainting.MoveUp
+import pers.ccy.hs.operation.OpPainting.Remove
 import java.awt.event.ActionListener
 import javax.swing.*
 import javax.swing.event.ListSelectionListener
 
 
-class JPanel_Info(model: DefaultListModel<String>, houseData: HouseData) : JPanel() {
+class JPanel_Info(houseData: HouseData) : JPanel() {
     val scrollPane = JScrollPane()
-    val list = JList(model)
+    val list = JList(HouseData.model)
     val btn = arrayOf(
         JButton("修改"), JButton("删除"),
         JButton("上移"), JButton("下移")
@@ -47,7 +47,6 @@ class JPanel_Info(model: DefaultListModel<String>, houseData: HouseData) : JPane
                     3 -> if (str != null) MoveDown(houseData, str!!.toInt())
                 }
                 houseData.UpdatModel()
-                houseData.windowDoorData!!.UpdatModel()
                 this.parent.repaint()
             })
         }

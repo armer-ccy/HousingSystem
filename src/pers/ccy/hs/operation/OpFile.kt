@@ -1,29 +1,29 @@
-package pers.ccy.hs.test
+package pers.ccy.hs.operation
 
+import com.google.gson.GsonBuilder
+import org.dom4j.Attribute
 import org.dom4j.Element
 import org.dom4j.io.SAXReader
 import pers.ccy.hs.data.HouseData
 import pers.ccy.hs.data.WindowDoorData
 import java.io.File
+import javax.swing.JFrame
+import javax.swing.JOptionPane
 
-object Demo1 {
-    @Throws(java.lang.Exception::class)
-    @JvmStatic
-    fun main(args: Array<String>) {
+object OpFile {
+    fun open(file: File, houseData: HouseData) {
         val saxReader = SAXReader()
-        val document = saxReader.read(File("C:\\Users\\ccy\\Desktop\\xml.xml"))
+        val document = saxReader.read(file)
         val root = document.rootElement
         val it = root.elementIterator()
-        val houseData = HouseData()
         var hd = houseData
         while (it.hasNext()) {
             val element = it.next() as Element
             if (element.name == "WallNumber") {
-                println("asdasdasdasdasdasdasdasdasdsadasdasd")
-                houseData.id=element.text.toInt()
+                houseData.id = element.text.toInt()
             } else if (element.name == "DoorOrWindowNumber") {
-                WindowDoorData.number=element.text.toInt()
-            }else {
+                WindowDoorData.number = element.text.toInt()
+            } else {
                 //id
                 hd.next = HouseData()
                 hd = hd.next!!
@@ -34,7 +34,6 @@ object Demo1 {
                 while (eleIt.hasNext()) {
                     val e = eleIt.next() as Element
 
-                    println(e.name)
                     //门窗
                     if (e.name == "DoorOrWindow") {
                         var wd: WindowDoorData
@@ -59,9 +58,10 @@ object Demo1 {
                 }
             }
         }
-        houseData.allToPrint()
-        println("WallNumber:"+houseData.id)
-        println("DoorOrWindowNumber:"+WindowDoorData.number)
+        //打印
+        /*houseData.allToPrint()
+        println("WallNumber:" + houseData.id)
+        println("DoorOrWindowNumber:" + WindowDoorData.number)*/
     }
 
     private fun assignment(houseData: HouseData, property: String, value: String) {
@@ -84,5 +84,35 @@ object Demo1 {
             "info3" -> windowDoorData.info3 = value.toDouble()
             "info4" -> windowDoorData.info4 = value.toDouble()
         }
+    }
+
+    fun save_before(houseData: HouseData, jf: JFrame): Boolean {
+        var hd = houseData
+        while (hd.next != null) {
+            var now = hd.next!!.windowDoorData
+            while (now != null) {
+                if (now.type == 0)
+                    return true
+                now = now.next
+            }
+            hd = hd.next!!
+        }
+        val worr = JOptionPane.showOptionDialog(
+            jf,
+            "房间没有门",
+            "房间没有门",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.WARNING_MESSAGE,
+            null, arrayOf("取消保存", "继续保存"), "取消保存"
+        )
+        return worr == 1
+    }
+
+    fun save(houseData: HouseData, file: File) {
+        var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<painting>\n"
+        str += if (houseData.next != null) houseData.next!!.allToSave() else ""
+        str += "<WallNumber>${houseData.id}</WallNumber>\n<DoorOrWindowNumber>${WindowDoorData.number}</DoorOrWindowNumber>\n"
+        str += "</painting>"
+        file.writeText(str)
     }
 }

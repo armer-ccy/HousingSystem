@@ -3,8 +3,8 @@ package pers.ccy.hs.UI
 import com.borland.jbcl.layout.XYConstraints
 import com.borland.jbcl.layout.XYLayout
 import pers.ccy.hs.data.HouseData
-import pers.ccy.hs.operation.Op.HD_Update
-import pers.ccy.hs.operation.Op.Select
+import pers.ccy.hs.operation.OpPainting.HD_Update
+import pers.ccy.hs.operation.OpPainting.Select
 import java.awt.Dialog
 import java.awt.event.*
 import javax.swing.*
@@ -84,14 +84,14 @@ class ReviseUI(houseData: HouseData, i: Int) : JDialog(), ActionListener {
     }
 
     init {
-        this.setBounds(100, 100, 100, 500)
+        this.setBounds(100, 100, 300, 500)
         this.modalityType = Dialog.ModalityType.APPLICATION_MODAL
         this.title = "修改"
         this.isResizable = true
         this.defaultCloseOperation = DISPOSE_ON_CLOSE
         this.add(jp)
 
-        jp.setBounds(100, 100, 100, 500)
+        jp.setBounds(100, 100, 300, 500)
         jp.layout = XYLayout()
         jp.isVisible = true
 

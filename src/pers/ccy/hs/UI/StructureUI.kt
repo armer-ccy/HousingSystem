@@ -3,19 +3,12 @@ package pers.ccy.hs.UI
 import com.borland.jbcl.layout.XYConstraints
 import com.borland.jbcl.layout.XYLayout
 import pers.ccy.hs.data.HouseData
-import pers.ccy.hs.data.WindowDoorData
-import pers.ccy.hs.operation.Op.DisplayHiding
+import pers.ccy.hs.operation.OpPainting.DisplayHiding
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
 import javax.swing.*
 
-class StructureUI(
-    houseData: HouseData,
-    windowDoorData: WindowDoorData,
-    model: DefaultListModel<String>,
-    modelCB: DefaultComboBoxModel<String>,
-    modelWD: DefaultListModel<String>
-) : JPanel(), ActionListener {
+class StructureUI(houseData: HouseData) : JPanel(), ActionListener {
 
     var draw_w = 500
     var draw_h = 350
@@ -24,12 +17,12 @@ class StructureUI(
     private val jp2 = JPanel_SelectStraightLineORCurve()
     private val jp3 = JPanel_StraightLine(houseData)
     private val jp4 = JPanel_Curve(houseData)
-    private val jp5 = JPanel_Door(windowDoorData, modelCB)
-    private val jp6 = JPanel_Window(windowDoorData, modelCB)
+    private val jp5 = JPanel_Door(houseData)
+    private val jp6 = JPanel_Window(houseData)
 
-    private val jp_info = JPanel_Info(model, houseData)
-    private val jp_wd_info = JPanel_Info_WD(modelWD, windowDoorData)
-    private val jp_draw = JPanel_Draw(houseData, draw_w - 10, draw_h - 20, model)
+    private val jp_info = JPanel_Info(houseData)
+    private val jp_wd_info = JPanel_Info_WD( houseData)
+    private val jp_draw = JPanel_Draw(houseData, draw_w - 10, draw_h - 20)
 
     override fun actionPerformed(e: ActionEvent) {
         /*if (jp1.jrba.get(0).isSelected) {
@@ -79,11 +72,9 @@ class StructureUI(
             this.repaint()
         })
 
-        model.clear()
-        houseData.allToString(model)
-
-        modelWD.clear()
-        windowDoorData.allToString(modelWD)
+        HouseData.model.clear()
+        HouseData.modelWD.clear()
+        houseData.allToModel()
 
         this.add(jp_info, XYConstraints(205, 0, 150, 350))
         this.add(jp_wd_info, XYConstraints(355, 0, 105, 350))

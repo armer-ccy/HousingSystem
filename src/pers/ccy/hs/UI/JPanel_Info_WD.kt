@@ -1,19 +1,20 @@
 package pers.ccy.hs.UI
 
-import pers.ccy.hs.data.WindowDoorData
-import pers.ccy.hs.operation.Op.Remove
+import pers.ccy.hs.data.HouseData
+import pers.ccy.hs.operation.OpPainting.RemoveWD
 import java.awt.event.ActionListener
 import javax.swing.*
 import javax.swing.event.ListSelectionListener
 
 
-class JPanel_Info_WD(model: DefaultListModel<String>, windowDoorData: WindowDoorData) : JPanel() {
+class JPanel_Info_WD(houseData: HouseData) : JPanel() {
     val scrollPane = JScrollPane()
-    val list = JList(model)
+    val list = JList(HouseData.modelWD)
     val btn = arrayOf(
         JButton("修改"), JButton("删除")
     )
-    var str: String? = null
+    //var str: String? = null
+    var strArr: List<String>? = null
 
     init {
         this.layout = null
@@ -21,7 +22,8 @@ class JPanel_Info_WD(model: DefaultListModel<String>, windowDoorData: WindowDoor
         scrollPane.setViewportView(list)
         list.selectionMode = ListSelectionModel.SINGLE_SELECTION
         list.addListSelectionListener(ListSelectionListener {
-            str = list.selectedValue?.indexOf(',')?.let { it1 -> list.selectedValue?.substring(0, it1) }
+            //str = list.selectedValue?.indexOf(',')?.let { it1 -> list.selectedValue?.substring(0, it1) }
+            strArr = list.selectedValue?.split(",")
         })
         this.add(scrollPane)
 
@@ -31,17 +33,18 @@ class JPanel_Info_WD(model: DefaultListModel<String>, windowDoorData: WindowDoor
             it.addActionListener(ActionListener {
                 when (index) {
                     0 -> {
-                        if (str != null) {
-                            ReviseWDUI(windowDoorData, str!!.toInt()).show()//show()不能删
+                        if (strArr != null) {
+                            ReviseWDUI(houseData, strArr!![0].toInt(), strArr!![1].toInt()).show()//show()不能删
                         }
                     }
                     1 ->
-                        if (str == null)
-                            Remove(windowDoorData)
-                        else
-                            Remove(windowDoorData, str!!.toInt())
+                        //if (str == null)
+                        //    str = list//list.lastVisibleIndex
+                        //else
+                        if (strArr != null)
+                            RemoveWD(houseData, strArr!![0].toInt())
                 }
-                windowDoorData.UpdatModel()
+                houseData.UpdatModel()
                 this.parent.repaint()
             })
         }

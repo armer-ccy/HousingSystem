@@ -1,98 +1,54 @@
 package pers.ccy.hs.test
 
-import java.awt.event.ActionEvent
-import java.awt.event.ActionListener
-import javax.swing.*
-import com.borland.jbcl.layout.*;
-import javax.swing.WindowConstants.EXIT_ON_CLOSE
+import org.dom4j.DocumentHelper
+import org.dom4j.io.OutputFormat
+import org.dom4j.io.XMLWriter
+import java.io.File
+import java.io.FileOutputStream
 
-class UI_test :  ActionListener {
-    private val jf = JFrame()
-    private val jp1 = JPanel()
-    private val jp2 = JPanel()
-    private val jp3 = JPanel()
 
-    private val jrba1 = arrayOf(
-        JRadioButton("a"), JRadioButton("b")
-    )
-    private val jrba2 = arrayOf(
-        JRadioButton("5~15岁"), JRadioButton("16~35岁")
-    )
-    private val jrba3 = arrayOf(
-        JRadioButton("26~35岁"), JRadioButton("36~45岁")
-    )
-    private val bg = ButtonGroup()
+object Demo {
+    @Throws(Exception::class)
+    @JvmStatic
+    fun main(args: Array<String>) {
+        val doc = DocumentHelper.createDocument()
 
-    override fun actionPerformed(e: ActionEvent) {
-        if (jrba1.get(1).isSelected) {
-            jp2.isVisible = false
-            jp3.isVisible = true
-        } else {
-            jp2.isVisible = true
-            jp3.isVisible = false
-        }
-        /*if (e.source === jba[1]) {
-            for (i in 0 until jcba.length) {
-                jcba.get(i).setSelected(false)
-                jtf.text = ""
-            }
-        } else {
-            val temp1 = StringBuffer("你是一个")
-            val temp2 = StringBuffer()
-            for (i in 0..4) {
-                if (jrba.get(i).isSelected()) {
-                    temp1.append(jrba.get(i).getText())
-                }
-                if (jcba.get(i).isSelected()) {
-                    temp2.append(jcba.get(i).getText().toString() + ".")
-                }
-            }
-            if (temp2.length == 0) {
-                jtf.text = "爱好为空？？？"
-            } else {
-                temp1.append("的人，比较喜欢")
-                temp1.append(temp2.substring(0, temp2.length - 1))
-                jtf.text = temp1.append("。").toString()
-            }
-        }*/
-    }
+        //增加根节点
+        val books = doc.addElement("books")
 
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            KMain2()
-        }
-    }
+        //增加子元素
+        val book1 = books.addElement("book")
+        val title1 = book1.addElement("title")
+        val author1 = book1.addElement("author")
+        val book2 = books.addElement("book")
+        val title2 = book2.addElement("title")
+        val author2 = book2.addElement("author")
 
-    init {
-        jf.layout = XYLayout()
-        jp1.layout = null
-        jp2.layout = null
-        jp3.layout = null
-        jrba1.get(0).isSelected = true
-        jrba1.forEachIndexed { index, item ->  item.setBounds(40 + index * 100, 40, 80, 30)}
-        jrba2.forEachIndexed { index, item ->  item.setBounds(40 + index * 120, 40, 80, 30)}
-        jrba3.forEachIndexed { index, item ->  item.setBounds(40 + index * 120, 40, 80, 30)}
-        jrba1.forEach { jp1.add(it) }
-        jrba2.forEach { jp2.add(it) }
-        jrba3.forEach { jp3.add(it) }
-        jrba1.forEach { it.addActionListener(this) }
-        jrba2.forEach { it.addActionListener(this) }
-        jrba3.forEach { it.addActionListener(this) }
-        jrba1.forEach { bg.add(it) }
-        //jrba2.forEach { bg.add(it) }
-        //jrba3.forEach { bg.add(it) }
 
-        jf.add(jp1,XYConstraints(0,0,200,200))
-        jf.add(jp2,XYConstraints(0,200,400,200))
-        jf.add(jp3,XYConstraints(0,400,200,200))
-        jf.title = "食物调查表"
-        jf.setBounds(100, 100, 700, 280)
-        jf.isVisible = true
-        //jp1.isVisible = true
-        //jp2.isVisible = false
-        //jp3.isVisible = true
-        jf.isResizable = true
-        jf.defaultCloseOperation = EXIT_ON_CLOSE
+        //为子节点添加属性
+        book1.addAttribute("id", "001")
+
+        //为元素添加内容
+        title1.text = "Harry Potter"
+        author1.text = "J K. Rowling"
+        book2.addAttribute("id", "002")
+        title2.text = "Learning XML"
+        author2.text = "Erik T. Ray"
+
+
+        //实例化输出格式对象
+        val format = OutputFormat.createPrettyPrint()
+
+        //设置输出编码
+        format.encoding = "UTF-8"
+
+        //创建需要写入的File对象
+        val file = File("C:" + File.separator + "Users\\ccy\\Desktop\\books.xml")
+
+        //生成XMLWriter对象，构造函数中的参数为需要输出的文件流和格式
+        val writer = XMLWriter(FileOutputStream(file), format)
+
+        //开始写入，write方法中包含上面创建的Document对象
+        writer.write(doc)
     }
 }

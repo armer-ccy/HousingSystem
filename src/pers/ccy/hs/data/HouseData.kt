@@ -12,21 +12,15 @@ class HouseData {
     var info3 = .0
     var info4 = .0
     var next: HouseData? = null
-    var model: DefaultListModel<String>? = null
-    var modelCB: DefaultComboBoxModel<String>? = null
     var windowDoorData: WindowDoorData? = null
 
-    constructor() {}
-
-    constructor(
-        model: DefaultListModel<String>,
-        modelCB: DefaultComboBoxModel<String>,
-        windowDoorData: WindowDoorData
-    ) {
-        this.model = model
-        this.modelCB = modelCB
-        this.windowDoorData = windowDoorData
+    companion object {
+        val model = DefaultListModel<String>()
+        val modelCB = DefaultComboBoxModel<String>()
+        val modelWD = DefaultListModel<String>()
     }
+
+    constructor() {}
 
     constructor(id: Int, type: Int, type2: Int, info: Double, info2: Double) {
         this.id = id
@@ -59,16 +53,12 @@ class HouseData {
         return "$id,$type,$type2,$info,$info2,$info3,$info4"
     }
 
-    fun allToString(model: DefaultListModel<String>) {
+    fun allToModel() {
         //if (type != 0)
         model.addElement(toString())
-        next?.allToString(model)
-    }
-
-    fun allToString(model: DefaultComboBoxModel<String>) {
-        //if (type != 0)
-        model.addElement(toString())
-        next?.allToString(model)
+        windowDoorData?.allToString(modelWD, id)
+        if (type == 1) modelCB.addElement(toString())
+        next?.allToModel()
     }
 
     fun allToString(): ArrayList<String> {
@@ -81,9 +71,62 @@ class HouseData {
     }
 
     fun UpdatModel() {
-        model?.clear()
-        model?.let { allToString(it) }
-        modelCB?.removeAllElements()
-        modelCB?.let { allToString(it) }
+        model.clear()
+        modelWD.clear()
+        modelCB.removeAllElements()
+        allToModel()
+    }
+
+    fun RemoveAll() {
+        id = 0
+        WindowDoorData.number = 0
+        next?.let {
+            it.RemoveAll()
+            it.windowDoorData?.let { it.RemoveAll() }
+        }
+        next = null
+    }
+
+    fun Search(a: Int): HouseData {
+        if (id == a && type != 0)
+            return this
+        else
+            return next!!.Search(a)
+    }
+
+    fun Add(wdd: WindowDoorData) {
+        if (windowDoorData == null) {
+            windowDoorData = wdd
+            return
+        }
+
+        var now = windowDoorData
+        while (now!!.next != null) now = now.next
+        now.next = wdd
+    }
+
+    fun toSave(): String {
+        var str = "<Wall id=\"$id\">\n" +
+                "<type>$type</type>\n" +
+                "<type2>$type2</type2>\n" +
+                "<info>$info</info>\n" +
+                "<info2>$info2</info2>\n" +
+                "<info3>$info3</info3>\n" +
+                "<info4>$info4</info4>\n"
+        str += if(windowDoorData!=null) windowDoorData!!.allToSave() else ""
+        str += "</Wall>\n\n"
+        return str
+    }
+
+    fun allToSave(): String {
+        var str = toSave()
+        str += if(next!=null) next!!.allToSave() else ""
+        return str
+    }
+
+    fun allToPrint() {
+        println("Wall:"+toString())
+        windowDoorData?.allToPrint()
+        next?.allToPrint()
     }
 }
