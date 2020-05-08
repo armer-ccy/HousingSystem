@@ -2,15 +2,14 @@ package pers.ccy.hs.main
 
 import com.borland.jbcl.layout.XYConstraints
 import com.borland.jbcl.layout.XYLayout
-import pers.ccy.hs.UI.CombinationUI
-import pers.ccy.hs.UI.StructureUI
+import pers.ccy.hs.UI.combination.CombinationUI
+import pers.ccy.hs.UI.structure.StructureUI
+import pers.ccy.hs.data.CombinationData
 import pers.ccy.hs.data.HouseData
-import pers.ccy.hs.data.WindowDoorData
 import pers.ccy.hs.operation.MyFileFilter
 import pers.ccy.hs.operation.OpFile.open
 import pers.ccy.hs.operation.OpFile.save
 import pers.ccy.hs.operation.OpFile.save_before
-import pers.ccy.hs.operation.OpPainting.Add
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
 import java.awt.event.KeyEvent.*
@@ -20,6 +19,7 @@ import javax.swing.*
 
 class Main : ActionListener {
     private var houseData = HouseData()
+    var combinationData: ArrayList<CombinationData> = ArrayList()
 
     private var select = 0
     var file: File? = null
@@ -28,8 +28,8 @@ class Main : ActionListener {
 
 
     private val jf = JFrame()
-    private val jpStructureUI = StructureUI(houseData)
-    private val jpCombinationUI = CombinationUI()
+    private val jpStructureUI = StructureUI(houseData)//房屋构造
+    private val jpCombinationUI = CombinationUI(combinationData)//选择方式
     private val menuBar = JMenuBar()
     private val fileMenu = JMenu("文件")
 
@@ -153,18 +153,16 @@ class Main : ActionListener {
         jf.add(jpCombinationUI, XYConstraints(0, 0, 1000, 400))
 
         jpStructureUI.jp1.jrba[1].addActionListener {
-            jpCombinationUI.jp1.jrba[1].isSelected = true
             jpStructureUI.isVisible = false
             jpCombinationUI.isVisible = true
             select = 1
-
+            jpCombinationUI.jp1.jrba[1].doClick()
         }
         jpCombinationUI.jp1.jrba[0].addActionListener {
-            jpStructureUI.jp1.jrba[0].isSelected = true
             jpStructureUI.isVisible = true
             jpCombinationUI.isVisible = false
             select = 0
-
+            jpStructureUI.jp1.jrba[0].doClick()
         }
 
         jpStructureUI.isVisible = true

@@ -1,9 +1,8 @@
 package pers.ccy.hs.operation
 
-import com.google.gson.GsonBuilder
-import org.dom4j.Attribute
 import org.dom4j.Element
 import org.dom4j.io.SAXReader
+import pers.ccy.hs.data.CombinationData
 import pers.ccy.hs.data.HouseData
 import pers.ccy.hs.data.WindowDoorData
 import java.io.File
@@ -19,41 +18,45 @@ object OpFile {
         var hd = houseData
         while (it.hasNext()) {
             val element = it.next() as Element
-            if (element.name == "WallNumber") {
-                houseData.id = element.text.toInt()
-            } else if (element.name == "DoorOrWindowNumber") {
-                WindowDoorData.number = element.text.toInt()
-            } else {
-                //id
-                hd.next = HouseData()
-                hd = hd.next!!
-                hd.id = element.attributeValue("id").toInt()
+            when (element.name) {
+                "WallNumber" -> {
+                    houseData.id = element.text.toInt()
+                }
+                "DoorOrWindowNumber" -> {
+                    WindowDoorData.number = element.text.toInt()
+                }
+                else -> {
+                    //id
+                    hd.next = HouseData()
+                    hd = hd.next!!
+                    hd.id = element.attributeValue("id").toInt()
 
-                //其他
-                val eleIt = element.elementIterator()
-                while (eleIt.hasNext()) {
-                    val e = eleIt.next() as Element
+                    //其他
+                    val eleIt = element.elementIterator()
+                    while (eleIt.hasNext()) {
+                        val e = eleIt.next() as Element
 
-                    //门窗
-                    if (e.name == "DoorOrWindow") {
-                        var wd: WindowDoorData
-                        if (hd.windowDoorData != null) {
-                            wd = hd.windowDoorData!!
-                            while (wd.next != null) wd = wd.next!!
-                            wd.next = WindowDoorData()
-                            wd = wd.next!!
-                        } else {
-                            wd = WindowDoorData()
-                            hd.windowDoorData = wd
+                        //门窗
+                        if (e.name == "DoorOrWindow") {
+                            var wd: WindowDoorData
+                            if (hd.windowDoorData != null) {
+                                wd = hd.windowDoorData!!
+                                while (wd.next != null) wd = wd.next!!
+                                wd.next = WindowDoorData()
+                                wd = wd.next!!
+                            } else {
+                                wd = WindowDoorData()
+                                hd.windowDoorData = wd
+                            }
+                            val it1 = e.elementIterator()
+                            wd.id = e.attributeValue("id").toInt()
+                            while (it1.hasNext()) {
+                                val element2 = it1.next() as Element
+                                assignment(wd, element2.name, element2.text)
+                            }
+                        } else {//墙的数据
+                            assignment(hd, e.name, e.text)
                         }
-                        val it1 = e.elementIterator()
-                        wd.id = e.attributeValue("id").toInt()
-                        while (it1.hasNext()) {
-                            val element2 = it1.next() as Element
-                            assignment(wd, element2.name, element2.text)
-                        }
-                    } else {//墙的数据
-                        assignment(hd, e.name, e.text)
                     }
                 }
             }
@@ -87,16 +90,7 @@ object OpFile {
     }
 
     fun save_before(houseData: HouseData, jf: JFrame): Boolean {
-        var hd = houseData
-        while (hd.next != null) {
-            var now = hd.next!!.windowDoorData
-            while (now != null) {
-                if (now.type == 0)
-                    return true
-                now = now.next
-            }
-            hd = hd.next!!
-        }
+        isHasDoor(houseData)
         val worr = JOptionPane.showOptionDialog(
             jf,
             "房间没有门",
@@ -108,11 +102,98 @@ object OpFile {
         return worr == 1
     }
 
+    fun isHasDoor(houseData: HouseData): Boolean {
+        var hd = houseData
+        while (hd.next != null) {
+            var now = hd.next!!.windowDoorData
+            while (now != null) {
+                if (now.type == 0)
+                    return true
+                now = now.next
+            }
+            hd = hd.next!!
+        }
+        return false
+    }
+
+    fun isHasDoor(combinationData: CombinationData): Boolean {
+        var hd = combinationData.houseData
+        while (hd.next != null) {
+            var now = hd.next!!.windowDoorData
+            while (now != null) {
+                if (now.type == 0)
+                    return true
+                now = now.next
+            }
+            hd = hd.next!!
+        }
+        return false
+    }
+
     fun save(houseData: HouseData, file: File) {
         var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<painting>\n"
         str += if (houseData.next != null) houseData.next!!.allToSave() else ""
         str += "<WallNumber>${houseData.id}</WallNumber>\n<DoorOrWindowNumber>${WindowDoorData.number}</DoorOrWindowNumber>\n"
         str += "</painting>"
         file.writeText(str)
+    }
+
+    fun import(file: File): CombinationData {
+        val saxReader = SAXReader()
+        val document = saxReader.read(file)
+        val root = document.rootElement
+        val it = root.elementIterator()
+        var houseData = HouseData()
+        var hd = houseData
+        while (it.hasNext()) {
+            val element = it.next() as Element
+            when (element.name) {
+                "WallNumber" -> {
+                    houseData.id = element.text.toInt()
+                }
+                "DoorOrWindowNumber" -> {
+                    WindowDoorData.number = element.text.toInt()
+                }
+                else -> {
+                    //id
+                    hd.next = HouseData()
+                    hd = hd.next!!
+                    hd.id = element.attributeValue("id").toInt()
+
+                    //其他
+                    val eleIt = element.elementIterator()
+                    while (eleIt.hasNext()) {
+                        val e = eleIt.next() as Element
+
+                        //门窗
+                        if (e.name == "DoorOrWindow") {
+                            var wd: WindowDoorData
+                            if (hd.windowDoorData != null) {
+                                wd = hd.windowDoorData!!
+                                while (wd.next != null) wd = wd.next!!
+                                wd.next = WindowDoorData()
+                                wd = wd.next!!
+                            } else {
+                                wd = WindowDoorData()
+                                hd.windowDoorData = wd
+                            }
+                            val it1 = e.elementIterator()
+                            wd.id = e.attributeValue("id").toInt()
+                            while (it1.hasNext()) {
+                                val element2 = it1.next() as Element
+                                assignment(wd, element2.name, element2.text)
+                            }
+                        } else {//墙的数据
+                            assignment(hd, e.name, e.text)
+                        }
+                    }
+                }
+            }
+        }
+        return CombinationData(houseData, file)
+        //打印
+        /*houseData.allToPrint()
+        println("WallNumber:" + houseData.id)
+        println("DoorOrWindowNumber:" + WindowDoorData.number)*/
     }
 }

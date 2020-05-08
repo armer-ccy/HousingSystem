@@ -1,75 +1,125 @@
 package pers.ccy.hs.test;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.List;
 
-import java.awt.Graphics;
-
-//Fig. 5.27: ShapesTest.java, modified by pandenghuang@163.com
-//Test application that displays class Shapes.
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import javax.swing.JApplet;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.Graphics; //handle the display
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 
-public class Main2 {
+public class Main2 extends JApplet {
 
-    public static class Shapes extends JPanel {
-        private int choice; // user's choice of which shape to draw
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-        // constructor sets the user's choice
-        public Shapes(int userChoice) {
-            choice = userChoice;
+    private JProgressBar jpb = new JProgressBar();                      //定义一个进度条显示进度
+    private JTextArea jtaResult = new JTextArea();                      //定义一个文本域显示素数
+    private JTextField jtfPrimeCount = new JTextField(8);               //定义一个文本框用于用户填写素数个数
+    private JButton jbtnDisplayPrime = new JButton("Display Prime");    //定义一个按钮执行任务
+
+    public Main2() {
+        jpb.setStringPainted(true);     //设置显示进度的百分比
+        jpb.setValue(0);
+        jpb.setMaximum(100);
+
+        //设置文本域自动换行，并且断行不断字
+        jtaResult.setWrapStyleWord(true);
+        jtaResult.setLineWrap(true);
+
+        JPanel panel = new JPanel();
+        panel.add(new JLabel("Enter the prime number count"));
+        panel.add(jtfPrimeCount);
+        panel.add(jbtnDisplayPrime);
+
+        add(jpb, BorderLayout.NORTH);
+        add(new JScrollPane(jtaResult), BorderLayout.CENTER);
+        add(panel, BorderLayout.SOUTH);
+
+        jbtnDisplayPrime.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ComputePrime task =
+                        new ComputePrime(Integer.parseInt(jtfPrimeCount.getText()), jtaResult);
+
+                task.addPropertyChangeListener(new PropertyChangeListener() {
+
+                    @Override
+                    public void propertyChange(PropertyChangeEvent evt) {
+                        //判断改变的属性是否是进度，如果是则获取进度的值并显示在进度条上
+                        if("progress".equals(evt.getPropertyName())) {
+                            jpb.setValue((Integer)evt.getNewValue());
+                        }
+                    }
+                });
+
+                task.execute();     //执行
+            }
+        });
+    }
+
+    static class ComputePrime extends SwingWorker<Integer, Integer> {
+
+        private int count;
+        private JTextArea result;
+
+        public ComputePrime(int count, JTextArea result) {
+            this.count = count;
+            this.result = result;
         }
 
-        // draws a cascade of shapes starting from the top-left corner
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            int width = getWidth(); // total width
-            int height = getHeight(); // total height
-            int barHorizontalDistance = width / 11;
-            int barVerticalDistance = height / 11;
+        @Override
+        protected Integer doInBackground() throws Exception {
+            publishPrimeNumbers(count);
+            return 0;
+        }
 
-            for (int i = 0; i < 10; i++) {
-                // pick the shape based on the user's choice
-                switch (choice) {
-                    case 1: // draw rectangles
-                        g.drawRect(10 + i * 10, 10 + i * 10,
-                                50 + i * 10, 50 + i * 10);
-                        break;
-                    case 2: // draw ovals
-                        g.drawOval(10 + i * 10, 10 + i * 10,
-                                50 + i * 10, 50 + i * 10);
-                        break;
-                    case 3: // draw concentric circles
-                        g.drawOval(width / 2 - (i + 1) * 10, height / 2 - (i + 1) * 10,
-                                10 + 20 * i, 10 + 20 * i);
-                        break;
-                    case 4: // draw bar chart
-                        g.drawRect(i * barHorizontalDistance, height - i * barVerticalDistance,
-                                20, height + i * height / 11);
-                        break;
+        //把找到的素数全部显示出来
+        @Override
+        protected void process(List<Integer> list) {
+            for(int i=0; i<list.size(); i++) {
+                result.append(list.get(i) + " ");
+            }
+            super.process(list);
+        }
+
+        private void publishPrimeNumbers(int n) {
+            int count = 0;
+            int number = 2;
+
+            while(count <= n) {
+                if(isPrime(number)) {
+                    count ++;
+                    setProgress(100 * count / n);   //设置进度
+                    publish(number);                //通过publish方法将找到的素数number发送给process方法
                 }
+
+                number ++;
             }
         }
+
+        public static boolean isPrime(int number) {
+            for(int divisor = 2; divisor <= number / 2; divisor++) {
+                if(number % divisor == 0) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
     }
 
-    public static void main(String[] args) {
-        // obtain user's choice
-        String input = JOptionPane.showInputDialog(
-                "输入1画长方形\n" +
-                        "输入2画圆形\n" +
-                        "输入3画同心圆\n" +
-                        "输入4画条形图");
-
-        int choice = Integer.parseInt(input); // convert input to int
-
-        // create the panel with the user's input
-        Shapes panel = new Shapes(choice);
-
-        JFrame application = new JFrame(); // creates a new JFrame
-
-        application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        application.add(panel);
-        application.setSize(300, 300);
-        application.setVisible(true);
-    }
 }

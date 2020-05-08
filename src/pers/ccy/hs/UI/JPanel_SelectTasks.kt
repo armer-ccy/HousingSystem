@@ -13,7 +13,7 @@ class JPanel_SelectTasks : JPanel() {
     init {
         this.layout = null
         this.border = (BorderFactory.createTitledBorder("选择工作内容"))
-        jrba.get(0).isSelected = true
+        jrba[0].isSelected = true
         jrba.forEachIndexed { index, item ->  item.setBounds(5 + index * 100, 15, 80, 30)}
         jrba.forEach { this.add(it) }
         jrba.forEach { bg.add(it) }

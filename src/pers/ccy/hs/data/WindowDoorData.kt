@@ -29,14 +29,25 @@ class WindowDoorData {
     }
 
 
-    constructor(id: Int, type:Int, thick: Double, info: Double, info2: Double, info3: Double, info4: Double) {
+    constructor(id: Int, type: Int, thick: Double, info: Double, info2: Double, info3: Double, info4: Double) {
         this.id = id
-        this.type=type
+        this.type = type
         this.thick = thick
         this.info = info
         this.info2 = info2
         this.info3 = info3
         this.info4 = info4
+    }
+
+    constructor(str: String) {
+        val strArr = str.split(",")
+        this.id = strArr[0].toInt()
+        this.type = strArr[1].toInt()
+        this.thick = strArr[2].toDouble()
+        this.info = strArr[3].toDouble()
+        this.info2 = strArr[4].toDouble()
+        this.info3 = strArr[5].toDouble()
+        this.info4 = strArr[6].toDouble()
     }
 
     override fun toString(): String {
@@ -50,7 +61,7 @@ class WindowDoorData {
     fun allToString(modelWD: DefaultListModel<String>, Wid: Int) {
         //if (type != 0)
         modelWD.addElement(toString(Wid))
-        next?.allToString(modelWD,Wid)
+        next?.allToString(modelWD, Wid)
     }
 
     fun allToString(): ArrayList<String> {
@@ -80,12 +91,12 @@ class WindowDoorData {
 
     fun allToSave(): String {
         var str = toSave()
-        str += if(next!=null) next!!.allToSave() else ""
+        str += if (next != null) next!!.allToSave() else ""
         return str
     }
 
     fun allToPrint() {
-        println("DoorOrWindow:"+toString())
-        if(next!=null) next?.allToPrint()
+        println("DoorOrWindow:" + toString())
+        if (next != null) next?.allToPrint()
     }
 }
