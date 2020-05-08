@@ -3,13 +3,16 @@ package pers.ccy.hs.UI.combination
 import com.borland.jbcl.layout.XYConstraints
 import com.borland.jbcl.layout.XYLayout
 import pers.ccy.hs.data.CombinationData
-import pers.ccy.hs.data.HouseData
+import pers.ccy.hs.data.Point
+import pers.ccy.hs.operation.OpCombination
+import pers.ccy.hs.operation.OpCombination.VectorAngle
 import pers.ccy.hs.operation.OpCombination.importOpen
-import pers.ccy.hs.operation.OpStructure.HD_Update
-import pers.ccy.hs.operation.OpStructure.Select
-import java.awt.Dialog
-import java.awt.event.*
+import java.awt.event.ActionEvent
+import java.awt.event.ActionListener
+import java.awt.event.ItemListener
 import javax.swing.*
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 class CombinationSet(combinationData: ArrayList<CombinationData>) : JPanel(), ActionListener {
@@ -74,8 +77,42 @@ class CombinationSet(combinationData: ArrayList<CombinationData>) : JPanel(), Ac
                 if (a.length == b.length && a.thick == b.thick) {
                     combinationData.add(CombinationUI.comData!!)
                     combinationData[combinationData.count() - 1].id = combinationData.count()
+                    a.isused = true
+                    b.isused = true
+                    //a.point[3]->b.point[0]
+                    //求角度
+                    combinationData[combinationData.count() - 1].angle =
+                        -VectorAngle(
+                            a.point[0]!!.sub(a.point[1]!!),
+                            b.point[1]!!.sub(b.point[0]!!)
+                        ) + combinationData[Arr[0].toInt() - 1].angle
+                    //求起始
+                    //https://www.cnblogs.com/herd/p/11620760.html
+                    val angle = combinationData[combinationData.count() - 1].angle
+                    val angle1 = combinationData[Arr[0].toInt() - 1].angle
+                    var real = a.point[3]!!
+                    real = Point(
+                        (real.x) * cos(angle1) - (real.y) * sin(angle1),
+                        (real.x) * sin(angle1) + (real.y) * cos(angle1)
+                    )
+                    real = Point(
+                        real.x + combinationData[Arr[0].toInt() - 1].start.x,
+                        real.y + combinationData[Arr[0].toInt() - 1].start.y
+                    )
+                    val m = real.sub(b.point[0]!!)
+                    val xx: Double =
+                        (m.x - real.x) * cos(angle) - (m.y - real.y) * sin(angle) + real.x
+                    val yy: Double =
+                        (m.x - real.x) * sin(angle) + (m.y - real.y) * cos(angle) + real.y
+                    combinationData[combinationData.count() - 1].start = Point(xx, yy)
+                    combinationData.forEach {
+                        println("id:${it.id},angle:${it.angle},startx:${it.start.x},starty:${it.start.y}")
+                    }
+                    //保存连接
+                    combinationData[combinationData.count() - 1].connect = old.selectedItem.toString()
                     CombinationUI.comData = null
                     CombinationData.modelNew.removeAllElements()
+                    OpCombination.UpdatModel(combinationData)
                     this.parent.repaint()
                 } else {
                     JOptionPane.showOptionDialog(

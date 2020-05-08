@@ -1,5 +1,6 @@
 package pers.ccy.hs.data
 
+import pers.ccy.hs.operation.OpCombination.isIpsilateral
 import pers.ccy.hs.operation.OpStructure
 import java.io.File
 import javax.swing.DefaultComboBoxModel
@@ -15,6 +16,7 @@ class CombinationData {
     var path = ""
     var angle = .0
     var start = Point(.0, .0)
+    var connect=""
 
     companion object {
         val model = DefaultListModel<String>()
@@ -37,8 +39,7 @@ class CombinationData {
         loop@ while (hd != null) {
             when (hd.type) {
                 0 -> {
-                    if (hd.next == null) break@loop
-                    hd = hd.next!!
+                    hd = hd.next
                     continue@loop
                 }
                 1 -> {
@@ -89,12 +90,12 @@ class CombinationData {
                                 Door(
                                     wd.id, wd.thick, wd.info2, angle,
                                     Point(
-                                        l[len][0] - wd.info * cos(angle) + 2 * sin(angle),
-                                        l[len][1] - wd.info * sin(angle) - 2 * cos(angle)
+                                        l[len][0] - wd.info * cos(angle),
+                                        l[len][1] - wd.info * sin(angle)
                                     ),
                                     Point(
-                                        l[len][0] - (wd.info + wd.info2) * cos(angle) + 2 * sin(angle),
-                                        l[len][1] - (wd.info + wd.info2) * sin(angle) - 2 * cos(angle)
+                                        l[len][0] - (wd.info + wd.info2) * cos(angle),
+                                        l[len][1] - (wd.info + wd.info2) * sin(angle)
                                     )
                                 )
                             )
@@ -162,7 +163,7 @@ class CombinationData {
         }
 
         //求中心center
-        //https://www.cnblogs.com/ffgcc/p/10546437.html+
+        //https://www.cnblogs.com/ffgcc/p/10546437.html
         var x = .0
         var y = .0
         if (l[2][2] != l[1][0]) {
@@ -178,15 +179,36 @@ class CombinationData {
         //求门剩下的两个点
         door.forEach {
             var point = arrayOfNulls<Point>(2)
-            val angle = atan2(l[len][1] - l[len][3], l[len][0] - l[len][2])
+            val angle = atan2(it.point[0]!!.y-it.point[1]!!.y, it.point[0]!!.x-it.point[1]!!.x)
             //https://zhidao.baidu.com/question/983851560834754739.html
             //判断两点是处于直线异侧还是同侧？
-            var x = it.point[0]!!.x - 2 * sin(angle)
-            var y = it.point[0]!!.y + 2 * cos(angle)
-
-
-            it.point[0]!!.x + 2 * sin(angle)
-            it.point[0]!!.y - 2 * cos(angle)
+            var p = Point(
+                it.point[0]!!.x - it.thick * sin(angle),
+                it.point[0]!!.y + it.thick * cos(angle)
+            )
+            if (!isIpsilateral(it.point[0]!!, it.point[1]!!, p, center)) {
+                it.addlast(
+                    Point(
+                        it.point[0]!!.x + it.thick * sin(angle),
+                        it.point[0]!!.y - it.thick * cos(angle)
+                    ),
+                    Point(
+                        it.point[1]!!.x + it.thick * sin(angle),
+                        it.point[1]!!.y - it.thick * cos(angle)
+                    )
+                )
+            } else {
+                it.addlast(
+                    Point(
+                        it.point[0]!!.x - it.thick * sin(angle),
+                        it.point[0]!!.y + it.thick * cos(angle)
+                    ),
+                    Point(
+                        it.point[1]!!.x - it.thick * sin(angle),
+                        it.point[1]!!.y + it.thick * cos(angle)
+                    )
+                )
+            }
         }
     }
 

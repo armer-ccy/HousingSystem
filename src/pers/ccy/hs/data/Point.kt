@@ -28,4 +28,12 @@ class Point(x: Double, y: Double) {
     override fun toString(): String {
         return javaClass.name + "[x=" + x + ",y=" + y + "]"
     }
+
+    fun sub(p: Point): Point {
+        return Point(x - p.x, y - p.y)
+    }
+
+    fun toPrint(){
+        println("x:$x,y:$y")
+    }
 }

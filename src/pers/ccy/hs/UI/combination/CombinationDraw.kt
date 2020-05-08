@@ -3,15 +3,12 @@ package pers.ccy.hs.UI.combination
 import pers.ccy.hs.data.CombinationData
 import pers.ccy.hs.data.HouseData
 import pers.ccy.hs.operation.OpStructure.CCircle
-import pers.ccy.hs.operation.OpStructure.Collision
-import pers.ccy.hs.operation.OpStructure.Remove
 import pers.ccy.hs.operation.OpStructure.getDis
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.geom.Path2D
 import javax.swing.BorderFactory
-import javax.swing.JOptionPane
 import javax.swing.JPanel
 import kotlin.math.*
 
@@ -19,8 +16,8 @@ import kotlin.math.*
 class CombinationDraw(var combinationData: ArrayList<CombinationData>, val w: Int, val h: Int, val p: Double) :
     JPanel() {
 
-    val w_mid = w / 2
-    val h_mid = h / 2
+    private val wmid = w / 2.0
+    private val hmid = h / 2.0
     override fun paintComponent(graphics: Graphics) {
         val graphics = graphics as Graphics2D
         /*Graphics 类是所有图形上下文的抽象基类，允许应用程序在组件（已经在各种设备上实现）以及闭屏图像上进行绘制。
@@ -29,7 +26,16 @@ class CombinationDraw(var combinationData: ArrayList<CombinationData>, val w: In
         基本上用Graphics 就够平时绘图用了*/
         combinationData.forEach {
             val l = arrayListOf<Array<Double>>()
-            l.add(arrayOf(w_mid.toDouble(), h_mid.toDouble(), w_mid.toDouble(), h_mid.toDouble()))
+            val w_mid = wmid + it.start.x * p
+            val h_mid = hmid + it.start.y * p
+            l.add(
+                arrayOf(
+                    w_mid.toDouble() - 1 * sin(it.angle),
+                    h_mid.toDouble() + 1 * cos(it.angle),
+                    w_mid.toDouble(),
+                    h_mid.toDouble()
+                )
+            )
             var len = 0
             var hd: HouseData? = it.houseData
             graphics.drawLine(l[len][0].toInt(), l[len][1].toInt(), l[len][2].toInt(), l[len][3].toInt())
@@ -44,7 +50,7 @@ class CombinationDraw(var combinationData: ArrayList<CombinationData>, val w: In
                     1 -> {
                         when (hd.type2) {
                             0 -> {
-                                val angle = ((180 - hd.info) / 180) * PI
+                                val angle = ((180 - hd.info) / 180) * PI - it.angle
                                 val x = sin(angle) * hd.info2 * p
                                 val y = cos(angle) * hd.info2 * p
                                 l.add(arrayOf(l[len][2], l[len][3], l[len][2] + x, l[len][3] + y, hd.id.toDouble()))
@@ -59,24 +65,40 @@ class CombinationDraw(var combinationData: ArrayList<CombinationData>, val w: In
                                 val y = (cos(angle) * hd.info2 * p)
                                 l.add(arrayOf(l[len][2], l[len][3], l[len][2] + x, l[len][3] + y, hd.id.toDouble()))
                             }
-                            2 -> l.add(
-                                arrayOf(
-                                    l[len][2],
-                                    l[len][3],
-                                    w_mid + hd.info * p,
-                                    h_mid - hd.info2 * p,
-                                    hd.id.toDouble()
+                            2 -> {
+                                val a = hd.info * p
+                                val b = hd.info2 * p
+                                val xx =
+                                    (a) * cos(-it.angle) - (b) * sin(-it.angle)
+                                val yy =
+                                    (a) * sin(-it.angle) + (b) * cos(-it.angle)
+                                l.add(
+                                    arrayOf(
+                                        l[len][2],
+                                        l[len][3],
+                                        w_mid + xx,
+                                        h_mid - yy,
+                                        hd.id.toDouble()
+                                    )
                                 )
-                            )
-                            3 -> l.add(
-                                arrayOf(
-                                    l[len][2],
-                                    l[len][3],
-                                    l[len][2] + hd.info * p,
-                                    l[len][3] - hd.info2 * p,
-                                    hd.id.toDouble()
+                            }
+                            3 -> {
+                                val a = hd.info * p
+                                val b = hd.info2 * p
+                                val xx =
+                                    (a) * cos(-it.angle) - (b) * sin(-it.angle)
+                                val yy =
+                                    (a) * sin(-it.angle) + (b) * cos(-it.angle)
+                                l.add(
+                                    arrayOf(
+                                        l[len][2],
+                                        l[len][3],
+                                        l[len][2] + xx,
+                                        l[len][3] - yy,
+                                        hd.id.toDouble()
+                                    )
                                 )
-                            )
+                            }
                         }
                         len++
                         graphics.drawLine(
@@ -90,36 +112,76 @@ class CombinationDraw(var combinationData: ArrayList<CombinationData>, val w: In
                         var wd = hd.windowDoorData
                         graphics.color = Color.RED
                         while (wd != null) {
-                            if (wd.info + wd.info2 > getDis(l[len][0], l[len][1], l[len][2], l[len][3])) {
-                            }
-                            graphics.color = when (wd.type) {
-                                0 -> Color.RED
-                                1 -> Color.BLUE
-                                else -> Color.BLACK
-                            }
                             val outline: Path2D = Path2D.Float()
                             val angle = atan2(l[len][1] - l[len][3], l[len][0] - l[len][2])
                             //先前后偏移，再两侧偏移
                             //graphics.drawLine(l[len][0].toInt(), l[len][1].toInt(),(l[len][0]-10*sin(angle)).toInt(), (l[len][1]+10*cos(angle)).toInt())
-                            outline.moveTo(
-                                l[len][0] - wd.info * p * cos(angle) - 2 * p * sin(angle),
-                                l[len][1] - wd.info * p * sin(angle) + 2 * p * cos(angle)
-                            )
-                            outline.lineTo(
-                                l[len][0] - wd.info * p * cos(angle) + 2 * p * sin(angle),
-                                l[len][1] - wd.info * p * sin(angle) - 2 * p * cos(angle)
-                            )
-                            outline.lineTo(
-                                l[len][0] - (wd.info * p + wd.info2 * p) * cos(angle) + 2 * p * sin(angle),
-                                l[len][1] - (wd.info * p + wd.info2 * p) * sin(angle) - 2 * p * cos(angle)
-                            )
-                            outline.lineTo(
-                                l[len][0] - (wd.info * p + wd.info2 * p) * cos(angle) - 2 * p * sin(angle),
-                                l[len][1] - (wd.info * p + wd.info2 * p) * sin(angle) + 2 * p * cos(angle)
-                            )
-                            outline.closePath()
-                            graphics.fill(outline)
-
+                            if (wd.info + wd.info2 > getDis(l[len][0], l[len][1], l[len][2], l[len][3])) {
+                            }
+                            when (wd.type) {
+                                0 -> {
+                                    graphics.color = Color.RED
+                                    var d = it.selectDoor(wd.id)
+                                    var a = d.point[0]!!.x * p
+                                    var b = d.point[0]!!.y * p
+                                    var xx =
+                                        (a) * cos(it.angle) - (b) * sin(it.angle)
+                                    var yy =
+                                        (a) * sin(it.angle) + (b) * cos(it.angle)
+                                    outline.moveTo(
+                                        w_mid + xx,
+                                        h_mid + yy
+                                    )
+                                    a = d.point[1]!!.x * p
+                                    b = d.point[1]!!.y * p
+                                    xx = (a) * cos(it.angle) - (b) * sin(it.angle)
+                                    yy = (a) * sin(it.angle) + (b) * cos(it.angle)
+                                    outline.lineTo(
+                                        w_mid + xx,
+                                        h_mid + yy
+                                    )
+                                    a = d.point[3]!!.x * p
+                                    b = d.point[3]!!.y * p
+                                    xx = (a) * cos(it.angle) - (b) * sin(it.angle)
+                                    yy = (a) * sin(it.angle) + (b) * cos(it.angle)
+                                    outline.lineTo(
+                                        w_mid + xx,
+                                        h_mid + yy
+                                    )
+                                    a = d.point[2]!!.x * p
+                                    b = d.point[2]!!.y * p
+                                    xx = (a) * cos(it.angle) - (b) * sin(it.angle)
+                                    yy = (a) * sin(it.angle) + (b) * cos(it.angle)
+                                    outline.lineTo(
+                                        w_mid + xx,
+                                        h_mid + yy
+                                    )
+                                    outline.closePath()
+                                    graphics.fill(outline)
+                                }
+                                1 -> {
+                                    graphics.color = Color.BLUE
+                                    outline.moveTo(
+                                        l[len][0] - wd.info * p * cos(angle) - 2 * p * sin(angle),
+                                        l[len][1] - wd.info * p * sin(angle) + 2 * p * cos(angle)
+                                    )
+                                    outline.lineTo(
+                                        l[len][0] - wd.info * p * cos(angle) + 2 * p * sin(angle),
+                                        l[len][1] - wd.info * p * sin(angle) - 2 * p * cos(angle)
+                                    )
+                                    outline.lineTo(
+                                        l[len][0] - (wd.info * p + wd.info2 * p) * cos(angle) + 2 * p * sin(angle),
+                                        l[len][1] - (wd.info * p + wd.info2 * p) * sin(angle) - 2 * p * cos(angle)
+                                    )
+                                    outline.lineTo(
+                                        l[len][0] - (wd.info * p + wd.info2 * p) * cos(angle) - 2 * p * sin(angle),
+                                        l[len][1] - (wd.info * p + wd.info2 * p) * sin(angle) + 2 * p * cos(angle)
+                                    )
+                                    outline.closePath()
+                                    graphics.fill(outline)
+                                }
+                                else -> graphics.color = Color.BLACK
+                            }
                             wd = wd.next
                         }
                     }
@@ -129,7 +191,7 @@ class CombinationDraw(var combinationData: ArrayList<CombinationData>, val w: In
                         when (hd.type2) {
                             //https://www.cnblogs.com/fengliu-/p/10944151.html 在平面中，一个点绕任意点旋转θ度后的点的坐标
                             0 -> {
-                                val angle = ((180 - hd.info) / 180) * PI
+                                val angle = ((180 - hd.info) / 180) * PI - it.angle
                                 val x = sin(angle) * hd.info2 * p
                                 val y = cos(angle) * hd.info2 * p
                                 rx = l[len][2] + x
@@ -156,13 +218,25 @@ class CombinationDraw(var combinationData: ArrayList<CombinationData>, val w: In
                             }
                             2 -> {
                                 //https://blog.csdn.net/u011030529/article/details/84779566 三点确定一个圆的计算方法
+                                val a = hd.info * p
+                                val b = hd.info2 * p
+                                val xx =
+                                    (a) * cos(-it.angle) - (b) * sin(-it.angle)
+                                val yy =
+                                    (a) * sin(-it.angle) + (b) * cos(-it.angle)
+                                val a2 = hd.info3 * p
+                                val b2 = hd.info4 * p
+                                val xx2 =
+                                    (a) * cos(-it.angle) - (b) * sin(-it.angle)
+                                val yy2 =
+                                    (a) * sin(-it.angle) + (b) * cos(-it.angle)
                                 val xy = CCircle(
                                     l[len][2],
                                     l[len][3],
-                                    w_mid + hd.info * p,
-                                    h_mid - hd.info2 * p,
-                                    w_mid + hd.info3 * p,
-                                    h_mid - hd.info4 * p
+                                    w_mid + xx,
+                                    h_mid - yy,
+                                    w_mid + xx2,
+                                    h_mid - yy2
                                 )
                                 rx = xy[0]
                                 ry = xy[1]
@@ -220,7 +294,7 @@ class CombinationDraw(var combinationData: ArrayList<CombinationData>, val w: In
             }
             //闭合
             graphics.color = Color.BLACK
-            graphics.drawLine(w_mid, h_mid, l[len][2].toInt(), l[len][3].toInt())
+            graphics.drawLine(w_mid.toInt(), h_mid.toInt(), l[len][2].toInt(), l[len][3].toInt())
             /*graphics.color = Color.RED
         graphics.fill3DRect(a, b, 100, 100, true)
         a+=10
@@ -231,6 +305,6 @@ class CombinationDraw(var combinationData: ArrayList<CombinationData>, val w: In
 
     init {
         this.layout = null
-        this.border = (BorderFactory.createTitledBorder("新增房间俯视图"))
+        this.border = (BorderFactory.createTitledBorder("房间组合俯视图"))
     }
 }

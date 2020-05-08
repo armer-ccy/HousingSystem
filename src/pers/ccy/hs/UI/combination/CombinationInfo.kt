@@ -25,12 +25,17 @@ class CombinationInfo(combinationData: ArrayList<CombinationData>) : JPanel() {
         btn.setBounds(45, 315, 60, 30)
         this.add(btn)
         btn.addActionListener(ActionListener {
+            if (combinationData.last().connect != "") {
+                val Arr = combinationData.last().connect.split(",")
+                val a = combinationData[Arr[0].toInt() - 1].selectDoor(Arr[1].toInt())
+                a.isused = false
+            }
             combinationData.remove(combinationData.last())
             UpdatModel(combinationData)
-            this.repaint()
+            this.parent.repaint()
             initOpen(combinationData)
             UpdatModel(combinationData)
-            this.repaint()
+            this.parent.repaint()
         })
     }
 }

@@ -90,7 +90,7 @@ object OpFile {
     }
 
     fun save_before(houseData: HouseData, jf: JFrame): Boolean {
-        isHasDoor(houseData)
+        if (isHasDoor(houseData)) return true
         val worr = JOptionPane.showOptionDialog(
             jf,
             "房间没有门",

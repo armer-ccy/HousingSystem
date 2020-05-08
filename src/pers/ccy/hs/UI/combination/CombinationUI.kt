@@ -25,9 +25,9 @@ class CombinationUI(var combinationData: ArrayList<CombinationData>) : JPanel(),
     var draw_h = 350
     val jp3 = CombinationDrawNew(draw_w - 10, draw_h - 20, 1.0)
 
-    var draww = 350
+    var draww = 600
     var drawh = 350
-    val jp4 = CombinationDraw(combinationData, draww - 10, drawh - 20, 1.0)
+    val jp4 = CombinationDraw(combinationData, draww - 10, drawh - 20, 2.0)
 
     companion object {
         var comData: CombinationData? = null
@@ -45,6 +45,7 @@ class CombinationUI(var combinationData: ArrayList<CombinationData>) : JPanel(),
 
         this.add(cominationInfo, XYConstraints(205, 0, 150, 350))
         this.add(jp3, XYConstraints(360, 0, draw_w, draw_h))
+        this.add(jp4, XYConstraints(360+5+draw_w, 0, draww, drawh))
 
         jp1.jrba[1].addActionListener {
             initOpen(combinationData)

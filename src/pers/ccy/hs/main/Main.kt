@@ -43,6 +43,7 @@ class Main : ActionListener {
         when (menuItem.text) {
             "新建（N）" -> {
                 new()
+                file = null
             }
             "打开（O）" -> {
                 val state = jfc.showOpenDialog(null) // 此句是打开文件选择器界面的触发语句
@@ -66,10 +67,10 @@ class Main : ActionListener {
                         } else {
                             val f = jfc.selectedFile // f为选择到的文件
                             newFile(f)
-                            save(houseData,file!!)
+                            save(houseData, file!!)
                         }
                     } else {
-                        save(houseData,file!!)
+                        save(houseData, file!!)
                     }
                 }
             }
@@ -83,7 +84,7 @@ class Main : ActionListener {
                     } else {
                         val f = jfc.selectedFile // f为选择到的文件
                         newFile(f)
-                        save(houseData,file!!)
+                        save(houseData, file!!)
                     }
                 }
             }
@@ -106,6 +107,7 @@ class Main : ActionListener {
             jpStructureUI.jp1.jrba[1].isSelected = true
         else
             jpCombinationUI.jp1.jrba[1].isSelected = true
+        file = f
     }
 
     fun new() {
@@ -149,8 +151,8 @@ class Main : ActionListener {
 
         //jf.add(menuBar,XYConstraints(0,0,1000,100))
 
-        jf.add(jpStructureUI, XYConstraints(0, 0, 1000, 400))
-        jf.add(jpCombinationUI, XYConstraints(0, 0, 1000, 400))
+        jf.add(jpStructureUI, XYConstraints(0, 0, 10000, 10000))
+        jf.add(jpCombinationUI, XYConstraints(0, 0, 10000, 10000))
 
         jpStructureUI.jp1.jrba[1].addActionListener {
             jpStructureUI.isVisible = false

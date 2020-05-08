@@ -17,8 +17,19 @@ class Door {
         point[1] = point2
     }
 
-    fun addlast(point: Array<Point>) {
-        this.point[2] = point[0]
-        this.point[3] = point[1]
+    fun addlast(p1: Point, p2: Point) {
+        this.point[2] = p1
+        this.point[3] = p2
+    }
+
+    fun printPoint() {
+        print("0:")
+        point[0]?.toPrint()
+        print("1:")
+        point[1]?.toPrint()
+        print("2:")
+        point[2]?.toPrint()
+        print("3:")
+        point[3]?.toPrint()
     }
 }

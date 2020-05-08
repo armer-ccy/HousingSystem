@@ -38,8 +38,7 @@ class CombinationDrawNew(val w: Int, val h: Int, val p: Double) : JPanel() {
                 graphics.color = Color.BLACK
                 when (hd.type) {
                     0 -> {
-                        if (hd.next == null) break@loop
-                        hd = hd.next!!
+                        hd = hd.next
                         continue@loop
                     }
                     1 -> {
