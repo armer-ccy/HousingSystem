@@ -121,6 +121,7 @@ class CombinationDrawNew(val w: Int, val h: Int, val p: Double) : JPanel() {
                     2 -> {
                         var rx = .0
                         var ry = .0
+                        var angle3 = .0
                         when (hd.type2) {
                             //https://www.cnblogs.com/fengliu-/p/10944151.html 在平面中，一个点绕任意点旋转θ度后的点的坐标
                             0 -> {
@@ -133,6 +134,7 @@ class CombinationDrawNew(val w: Int, val h: Int, val p: Double) : JPanel() {
                                 val xx = (l[len][2] - rx) * cos(angle_hd) - (l[len][3] - ry) * sin(angle_hd) + rx
                                 val yy = (l[len][2] - rx) * sin(angle_hd) + (l[len][3] - ry) * cos(angle_hd) + ry
                                 l.add(arrayOf(l[len][2], l[len][3], xx, yy, hd.id.toDouble()))
+                                angle3= -hd.info3
                             }
                             1 -> {
                                 val a = (l[len][3] - l[len][1]).toDouble()
@@ -148,6 +150,7 @@ class CombinationDrawNew(val w: Int, val h: Int, val p: Double) : JPanel() {
                                 val xx = (l[len][2] - rx) * cos(angle_hd) - (l[len][3] - ry) * sin(angle_hd) + rx
                                 val yy = (l[len][2] - rx) * sin(angle_hd) + (l[len][3] - ry) * cos(angle_hd) + ry
                                 l.add(arrayOf(l[len][2], l[len][3], xx, yy, hd.id.toDouble()))
+                                angle3= -hd.info3
                             }
                             2 -> {
                                 //https://blog.csdn.net/u011030529/article/details/84779566 三点确定一个圆的计算方法
@@ -175,15 +178,15 @@ class CombinationDrawNew(val w: Int, val h: Int, val p: Double) : JPanel() {
                         len++
                         val d =
                             sqrt(((rx - l[len][0]) * (rx - l[len][0]) + (ry - l[len][1]) * (ry - l[len][1])))
-                        var angle1 = .0
-                        angle1 = if (rx == l[len][0]) if (ry > l[len][1]) 90.0 else -90.0
-                        else 90 + atan2((rx - l[len][0]).toDouble(), (ry - l[len][1]).toDouble()) * 180 / PI
+                        var angle1 = 90 + atan2((rx - l[len][0]), (ry - l[len][1])) * 180 / PI
                         if (angle1 < 0) angle1 += 360
-                        var angle2 = .0
-                        angle2 = if (rx == l[len][2]) if (ry > l[len][3]) 90.0 else -90.0
-                        else 90 + atan2((rx - l[len][2]).toDouble(), (ry - l[len][3]).toDouble()) * 180 / PI
+                        var angle2 = 90 + atan2((rx - l[len][2]), (ry - l[len][3])) * 180 / PI
                         if (angle2 < 0) angle2 += 360
-                        var angle3 = -(angle1 - angle2)
+                        if (angle3 == .0) {
+                            angle3 = angle1 - angle2
+                            if (angle3 > 180) angle3 -= 180
+                            if (angle3 < -180) angle3 += 180
+                        }
                         //https://blog.csdn.net/wangbowj123/article/details/72785849 JAVA 基本绘图——利用JFrame JPanel 绘制扇形
                         //graphics.drawArc(x：圆心-width/2, y：圆心-hight/2, width：x轴直径, hight：y轴直径, startAngle：启示角度（x轴正半轴方向为0）, arcAngle：扫过角度（逆时针为正）)
                         graphics.drawArc(
@@ -215,7 +218,7 @@ class CombinationDrawNew(val w: Int, val h: Int, val p: Double) : JPanel() {
             }
             //闭合
             graphics.color = Color.BLACK
-            //graphics.drawLine(w_mid,h_mid,l[len][2].toInt(),l[len][3].toInt())
+            graphics.drawLine(w_mid,h_mid,l[len][2].toInt(),l[len][3].toInt())
             /*graphics.color = Color.RED
             graphics.fill3DRect(a, b, 100, 100, true)
             a+=10

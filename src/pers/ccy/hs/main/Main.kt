@@ -7,6 +7,8 @@ import pers.ccy.hs.UI.structure.StructureUI
 import pers.ccy.hs.data.CombinationData
 import pers.ccy.hs.data.HouseData
 import pers.ccy.hs.operation.MyFileFilter
+import pers.ccy.hs.operation.OpCombination.UpdatModel
+import pers.ccy.hs.operation.OpFile.initOpen
 import pers.ccy.hs.operation.OpFile.open
 import pers.ccy.hs.operation.OpFile.save
 import pers.ccy.hs.operation.OpFile.save_before
@@ -22,9 +24,12 @@ class Main : ActionListener {
     var combinationData: ArrayList<CombinationData> = ArrayList()
 
     private var select = 0
-    var file: File? = null
+    var fileStructure: File? = null
+    var fileComb: File? = null
     private var ends = ""
     var jfc = JFileChooser() // 文件选择器
+    var jfc1 = JFileChooser() // 文件选择器
+    var jfc2 = JFileChooser() // 文件选择器
 
 
     private val jf = JFrame()
@@ -42,8 +47,18 @@ class Main : ActionListener {
         val menuItem = e?.source as JMenuItem
         when (menuItem.text) {
             "新建（N）" -> {
-                new()
-                file = null
+                if (jpStructureUI.isVisible) {
+                    newStructure()
+                    fileStructure = null
+                } else {
+                    newComb()
+                    fileComb = null
+                    UpdatModel(combinationData)
+                    jf.repaint()
+                    initOpen(combinationData)
+                    UpdatModel(combinationData)
+                    jf.repaint()
+                }
             }
             "打开（O）" -> {
                 val state = jfc.showOpenDialog(null) // 此句是打开文件选择器界面的触发语句
@@ -52,39 +67,84 @@ class Main : ActionListener {
                     return  // 撤销则返回
                 } else {
                     val f = jfc.selectedFile // f为选择到的文件
-                    newFile(f)
-                    new()
-                    open(f, houseData)
+                    newFile(f, jfc)
+                    if (ends == ".HSPRT") {
+                        newStructure()
+                        open(f, houseData)
+                        jpCombinationUI.jp1.jrba[0].doClick()
+                    } else {
+                        newComb()
+                        open(f, combinationData)
+                        jpStructureUI.jp1.jrba[1].doClick()
+                        UpdatModel(combinationData)
+                        CombinationData.modelNew.removeAllElements()
+                        CombinationUI.comData?.UpdatCBModel()
+                        jf.repaint()
+                    }
                 }
             }
             "保存（S）" -> {
-                if (save_before(houseData, jf)) {
-                    if (file == null) {
-                        val state = jfc.showSaveDialog(null) // 此句是打开文件选择器界面的触发语句
+                if (jpStructureUI.isVisible) {
+                    if (save_before(houseData, jf)) {
+                        if (fileStructure == null) {
+                            jfc1.dialogTitle = "保存"
+                            val state = jfc1.showSaveDialog(null) // 此句是打开文件选择器界面的触发语句
 
-                        if (state == 1) {
-                            return  // 撤销则返回
+                            if (state == 1) {
+                                return  // 撤销则返回
+                            } else {
+                                val f = jfc1.selectedFile // f为选择到的文件
+                                newFile(f, jfc1)
+                                save(houseData, fileStructure!!)
+                            }
                         } else {
-                            val f = jfc.selectedFile // f为选择到的文件
-                            newFile(f)
-                            save(houseData, file!!)
+                            save(houseData, fileStructure!!)
                         }
-                    } else {
-                        save(houseData, file!!)
+                    }
+                } else {
+                    if (save_before(combinationData, jf)) {
+                        if (fileComb == null) {
+                            jfc2.dialogTitle = "保存"
+                            val state = jfc2.showSaveDialog(null) // 此句是打开文件选择器界面的触发语句
+
+                            if (state == 1) {
+                                return  // 撤销则返回
+                            } else {
+                                val f = jfc2.selectedFile // f为选择到的文件
+                                newFile(f, jfc2)
+                                save(combinationData, fileComb!!)
+                            }
+                        } else {
+                            save(combinationData, fileComb!!)
+                        }
                     }
                 }
             }
             "另存为" -> {
-                if (save_before(houseData, jf)) {
-                    jfc.setDialogTitle("另存为")
-                    val state = jfc.showSaveDialog(null) // 此句是打开文件选择器界面的触发语句
+                if (jpStructureUI.isVisible) {
+                    if (save_before(houseData, jf)) {
+                        val state = jfc1.showSaveDialog(null) // 此句是打开文件选择器界面的触发语句
 
-                    if (state == 1) {
-                        return  // 撤销则返回
-                    } else {
-                        val f = jfc.selectedFile // f为选择到的文件
-                        newFile(f)
-                        save(houseData, file!!)
+                        if (state == 1) {
+                            return  // 撤销则返回
+                        } else {
+                            val f = jfc1.selectedFile // f为选择到的文件
+                            newFile(f, jfc1)
+                            save(houseData, fileStructure!!)
+                        }
+                    }
+                } else {
+                    if (save_before(combinationData, jf)) {
+                        jfc2.dialogTitle = "另存为"
+                        val state = jfc2.showSaveDialog(null) // 此句是打开文件选择器界面的触发语句
+
+                        if (state == 1) {
+                            return  // 撤销则返回
+                        } else {
+                            val f = jfc2.selectedFile // f为选择到的文件
+                            newFile(f, jfc2)
+                            save(combinationData, fileComb!!)
+                        }
                     }
                 }
             }
@@ -94,24 +154,32 @@ class Main : ActionListener {
         jf.repaint()
     }
 
-    fun newFile(f: File) {
-        ends = (jfc.fileFilter as MyFileFilter).getEnds()
-        if (f.absolutePath.toUpperCase().endsWith(ends.toUpperCase())) {
+    fun newFile(f: File, jfc: JFileChooser) {
+        if ((jfc.fileFilter as MyFileFilter).ends.size == 1) ends = (jfc.fileFilter as MyFileFilter).gets()
+        else ends = f.name.substring(f.name.lastIndexOf("."))
+        val f1 = if (f.absolutePath.toUpperCase().endsWith(ends.toUpperCase())) {
             // 如果文件是以选定扩展名结束的，则使用原名
-            file = f
+            f
         } else {
             // 否则加上选定的扩展名
-            file = File(f.absolutePath + ends);
+            File(f.absolutePath + ends)
         }
-        if (ends == ".HSPRT")
-            jpStructureUI.jp1.jrba[1].isSelected = true
-        else
-            jpCombinationUI.jp1.jrba[1].isSelected = true
-        file = f
+        if (ends == ".HSPRT") {
+            fileStructure = f1
+        } else {
+            fileComb = f1
+        }
     }
 
-    fun new() {
+    fun newStructure() {
         houseData.RemoveAll()
+        houseData.UpdatModel()
+    }
+
+    fun newComb() {
+        combinationData.clear()
+        UpdatModel(combinationData)
+        CombinationUI.comData = null
     }
 
     companion object {
@@ -178,9 +246,16 @@ class Main : ActionListener {
     init {
         jfc.fileSelectionMode = 0 // 设定只能选择到文件
         jfc.removeChoosableFileFilter(jfc.acceptAllFileFilter) // 不显示“所有文件”
-        jfc.fileFilter = MyFileFilter(".HSPRT", "房间构造文件(*.HSPRT)")
-        jfc.fileFilter = MyFileFilter(".HSASM", "房间组合文件(*.HSASM)")
-        //jfc.fileFilter = FileNameExtensionFilter("房间构造文件(*.HSPRT)", "HSPRT") // 设置文件过滤器
-        //jfc.fileFilter = FileNameExtensionFilter("房间组合文件(*.HSASM)", "HSASM") // 设置文件过滤器
+        jfc.fileFilter = MyFileFilter("房间构造文件(*.HSPRT)", ".HSPRT")
+        jfc.fileFilter = MyFileFilter("房间组合文件(*.HSASM)", ".HSASM")
+        jfc.fileFilter = MyFileFilter("房间构造文件(*.HSPRT)或房间组合文件(*.HSASM)", ".HSPRT", ".HSASM")
+
+        jfc1.fileSelectionMode = 0 // 设定只能选择到文件
+        jfc1.removeChoosableFileFilter(jfc.acceptAllFileFilter) // 不显示“所有文件”
+        jfc1.fileFilter = MyFileFilter("房间构造文件(*.HSPRT)", ".HSPRT")
+
+        jfc2.fileSelectionMode = 0 // 设定只能选择到文件
+        jfc2.removeChoosableFileFilter(jfc.acceptAllFileFilter) // 不显示“所有文件”
+        jfc2.fileFilter = MyFileFilter("房间组合文件(*.HSASM)", ".HSASM")
     }
 }

@@ -7,8 +7,7 @@ import javax.swing.DefaultComboBoxModel
 import javax.swing.DefaultListModel
 import kotlin.math.*
 
-class CombinationData {
-    lateinit var houseData: HouseData
+class CombinationData(var houseData: HouseData) {
     var door: ArrayList<Door> = ArrayList()
     lateinit var center: Point
     var id = 0
@@ -16,7 +15,7 @@ class CombinationData {
     var path = ""
     var angle = .0
     var start = Point(.0, .0)
-    var connect=""
+    var connect = ""
 
     companion object {
         val model = DefaultListModel<String>()
@@ -24,13 +23,9 @@ class CombinationData {
         val modelNew = DefaultComboBoxModel<String>()
     }
 
-    constructor(houseData: HouseData, file: File) {
-        //得到房间，名字，地址,id
-        this.houseData = houseData
-        name = file.name
-        path = file.toString()
+    init {
+        //得到房间
         var hd: HouseData? = houseData
-        this.id = id
 
         //求门
         val l = arrayListOf<Array<Double>>()
@@ -179,7 +174,7 @@ class CombinationData {
         //求门剩下的两个点
         door.forEach {
             var point = arrayOfNulls<Point>(2)
-            val angle = atan2(it.point[0]!!.y-it.point[1]!!.y, it.point[0]!!.x-it.point[1]!!.x)
+            val angle = atan2(it.point[0]!!.y - it.point[1]!!.y, it.point[0]!!.x - it.point[1]!!.x)
             //https://zhidao.baidu.com/question/983851560834754739.html
             //判断两点是处于直线异侧还是同侧？
             var p = Point(
@@ -212,6 +207,12 @@ class CombinationData {
         }
     }
 
+    constructor(houseData: HouseData, file: File) : this(houseData) {
+        //得到名字，地址
+        name = file.name
+        path = file.toString()
+    }
+
     fun UpdatModel() {
         model.addElement("$name,id:$id")
         door.forEach {
@@ -239,5 +240,17 @@ class CombinationData {
     fun selectDoor(id: Int): Door {
         door.forEach { if (it.id == id) return it }
         return door[0]
+    }
+
+    fun toSave(): String {
+        var str = "<CombinationData id=\"$id\">\n" +
+                "<data>\n" + houseData.allToSave() + "</data>\n" +
+                "<configure>" +
+                "<path>$path</path>\n" +
+                "<name>$name</name>\n" +
+                "<connect>$connect</connect>\n" +
+                "</configure>\n" +
+                "</CombinationData>\n\n"
+        return str
     }
 }

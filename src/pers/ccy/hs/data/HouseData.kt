@@ -3,7 +3,7 @@ package pers.ccy.hs.data
 import javax.swing.DefaultComboBoxModel
 import javax.swing.DefaultListModel
 
-class HouseData {
+class HouseData() {
     var id = 0
     var type = 0
     var type2 = 0
@@ -20,9 +20,7 @@ class HouseData {
         val modelWD = DefaultListModel<String>()
     }
 
-    constructor() {}
-
-    constructor(id: Int, type: Int, type2: Int, info: Double, info2: Double) {
+    constructor(id: Int, type: Int, type2: Int, info: Double, info2: Double) : this() {
         this.id = id
         this.type = type
         this.type2 = type2
@@ -30,22 +28,24 @@ class HouseData {
         this.info2 = info2
     }
 
-    constructor(id: Int, type: Int, type2: Int, info: Double, info2: Double, info3: Double) {
-        this.id = id
-        this.type = type
-        this.type2 = type2
-        this.info = info
-        this.info2 = info2
+    constructor(id: Int, type: Int, type2: Int, info: Double, info2: Double, info3: Double) : this(
+        id,
+        type,
+        type2,
+        info,
+        info2
+    ) {
         this.info3 = info3
     }
 
-    constructor(id: Int, type: Int, type2: Int, info: Double, info2: Double, info3: Double, info4: Double) {
-        this.id = id
-        this.type = type
-        this.type2 = type2
-        this.info = info
-        this.info2 = info2
-        this.info3 = info3
+    constructor(id: Int, type: Int, type2: Int, info: Double, info2: Double, info3: Double, info4: Double) : this(
+        id,
+        type,
+        type2,
+        info,
+        info2,
+        info3
+    ) {
         this.info4 = info4
     }
 
@@ -113,19 +113,19 @@ class HouseData {
                 "<info2>$info2</info2>\n" +
                 "<info3>$info3</info3>\n" +
                 "<info4>$info4</info4>\n"
-        str += if(windowDoorData!=null) windowDoorData!!.allToSave() else ""
+        str += if (windowDoorData != null) windowDoorData!!.allToSave() else ""
         str += "</Wall>\n\n"
         return str
     }
 
     fun allToSave(): String {
         var str = toSave()
-        str += if(next!=null) next!!.allToSave() else ""
+        str += if (next != null) next!!.allToSave() else ""
         return str
     }
 
     fun allToPrint() {
-        println("Wall:"+toString())
+        println("Wall:" + toString())
         windowDoorData?.allToPrint()
         next?.allToPrint()
     }

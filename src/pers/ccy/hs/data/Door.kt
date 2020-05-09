@@ -1,18 +1,10 @@
 package pers.ccy.hs.data
 
-class Door {
+class Door(var id: Int, var thick: Double, var length: Double, var angle: Double, point1: Point, point2: Point) {
     var point = arrayOfNulls<Point>(4)
     var isused = false
-    var thick = .0
-    var length = .0
-    var angle = .0
-    var id = 0
 
-    constructor(id: Int, thick: Double, length: Double, angle: Double, point1: Point, point2: Point) {
-        this.id = id
-        this.thick = thick
-        this.length = length
-        this.angle = angle
+    init {
         point[0] = point1
         point[1] = point2
     }
@@ -31,5 +23,16 @@ class Door {
         point[2]?.toPrint()
         print("3:")
         point[3]?.toPrint()
+    }
+
+    fun toSave(): String {
+        var str = "<Door id=\"$id\">\n" +
+                "<point>${point[0]!!.x},${point[0]!!.y},${point[1]!!.x},${point[1]!!.y},${point[2]!!.x},${point[2]!!.y},${point[3]!!.x},${point[3]!!.y}</point>\n" +
+                "<isused>$isused</isused>\n" +
+                "<thick>$thick</thick>\n" +
+                "<length>$length</length>\n" +
+                "<angle>$angle</angle>\n" +
+                "</Door>\n\n"
+        return str
     }
 }

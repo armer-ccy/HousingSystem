@@ -2,7 +2,7 @@ package pers.ccy.hs.UI.combination
 
 import pers.ccy.hs.data.CombinationData
 import pers.ccy.hs.operation.OpCombination.UpdatModel
-import pers.ccy.hs.operation.OpCombination.initOpen
+import pers.ccy.hs.operation.OpFile.initOpen
 import java.awt.event.ActionListener
 import javax.swing.*
 

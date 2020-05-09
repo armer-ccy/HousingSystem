@@ -5,9 +5,9 @@ import com.borland.jbcl.layout.XYLayout
 import pers.ccy.hs.UI.JPanel_SelectTasks
 import pers.ccy.hs.data.CombinationData
 import pers.ccy.hs.operation.OpCombination.UpdatModel
-import pers.ccy.hs.operation.OpCombination.initOpen
 import pers.ccy.hs.operation.OpFile
 import pers.ccy.hs.operation.OpFile.import
+import pers.ccy.hs.operation.OpFile.initOpen
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
 import javax.swing.JFileChooser

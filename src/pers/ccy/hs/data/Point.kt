@@ -7,15 +7,7 @@ package pers.ccy.hs.data
  * @author      Sami Shaio
  * @since       1.0
  */
-class Point(x: Double, y: Double) {
-
-    var x = .0
-    var y = .0
-
-    init {
-        this.x = x
-        this.y = y
-    }
+class Point(var x: Double, var y: Double) {
 
     override fun equals(obj: Any?): Boolean {
         if (obj is Point) {
@@ -33,7 +25,7 @@ class Point(x: Double, y: Double) {
         return Point(x - p.x, y - p.y)
     }
 
-    fun toPrint(){
+    fun toPrint() {
         println("x:$x,y:$y")
     }
 }

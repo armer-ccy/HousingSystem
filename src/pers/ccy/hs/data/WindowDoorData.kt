@@ -3,7 +3,7 @@ package pers.ccy.hs.data
 import javax.swing.DefaultComboBoxModel
 import javax.swing.DefaultListModel
 
-class WindowDoorData {
+class WindowDoorData() {
     var id = 0
     var type = 0
     var thick: Double = .0
@@ -17,9 +17,7 @@ class WindowDoorData {
         var number = 0
     }
 
-    constructor() {}
-
-    constructor(id: Int, type: Int, thick: Double, info: Double, info2: Double, info3: Double) {
+    constructor(id: Int, type: Int, thick: Double, info: Double, info2: Double, info3: Double) : this() {
         this.id = id
         this.type = type
         this.thick = thick
@@ -29,17 +27,18 @@ class WindowDoorData {
     }
 
 
-    constructor(id: Int, type: Int, thick: Double, info: Double, info2: Double, info3: Double, info4: Double) {
-        this.id = id
-        this.type = type
-        this.thick = thick
-        this.info = info
-        this.info2 = info2
-        this.info3 = info3
+    constructor(id: Int, type: Int, thick: Double, info: Double, info2: Double, info3: Double, info4: Double) : this(
+        id,
+        type,
+        thick,
+        info,
+        info2,
+        info3
+    ) {
         this.info4 = info4
     }
 
-    constructor(str: String) {
+    constructor(str: String) : this() {
         val strArr = str.split(",")
         this.id = strArr[0].toInt()
         this.type = strArr[1].toInt()
