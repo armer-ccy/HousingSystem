@@ -121,7 +121,7 @@ class CombinationDraw(var combinationData: ArrayList<CombinationData>, val w: In
                             when (wd.type) {
                                 0 -> {
                                     graphics.color = Color.RED
-                                    var d = it.selectDoor(wd.id)
+                                    val d = it.selectDoor(wd.id)
                                     var a = d.point[0]!!.x * p
                                     var b = d.point[0]!!.y * p
                                     var xx =

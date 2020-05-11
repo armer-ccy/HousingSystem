@@ -52,11 +52,7 @@ class ReviseWDUI(houseData: HouseData, i: Int, Wid: Int) : JDialog(), ActionList
 
     private val cmb: JComboBox<String> = JComboBox<String>()
 
-    override fun actionPerformed(e: ActionEvent?) {
-
-
-        jp.repaint()
-    }
+    override fun actionPerformed(e: ActionEvent?) {}
 
     init {
         this.setBounds(100, 100, 300, 500)

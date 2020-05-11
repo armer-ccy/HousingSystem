@@ -1,125 +1,65 @@
 package pers.ccy.hs.test;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.List;
 
-import javax.swing.JApplet;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingWorker;
+public class Main2 {
 
-public class Main2 extends JApplet {
+    /*0-9对应Ascii 48-57
+     *A-Z 65-90
+     *a-z 97-122
+     *第33～126号(共94个)是字符，其中第48～57号为0～9十个阿拉伯数字
+     */
+    public static void main(String[] args) {
+// System.out.println(charToByteAscii('9'));
+// System.out.println(byteAsciiToChar(57));
+        System.out.println(SumStrAscii("="));
+        System.out.println(SumStrAscii(">"));
+    }
 
     /**
+     * 方法一：将char 强制转换为byte
      *
+     * @param ch
+     * @return
      */
-    private static final long serialVersionUID = 1L;
+    public static byte charToByteAscii(char ch) {
+        byte byteAscii = (byte) ch;
 
-    private JProgressBar jpb = new JProgressBar();                      //定义一个进度条显示进度
-    private JTextArea jtaResult = new JTextArea();                      //定义一个文本域显示素数
-    private JTextField jtfPrimeCount = new JTextField(8);               //定义一个文本框用于用户填写素数个数
-    private JButton jbtnDisplayPrime = new JButton("Display Prime");    //定义一个按钮执行任务
-
-    public Main2() {
-        jpb.setStringPainted(true);     //设置显示进度的百分比
-        jpb.setValue(0);
-        jpb.setMaximum(100);
-
-        //设置文本域自动换行，并且断行不断字
-        jtaResult.setWrapStyleWord(true);
-        jtaResult.setLineWrap(true);
-
-        JPanel panel = new JPanel();
-        panel.add(new JLabel("Enter the prime number count"));
-        panel.add(jtfPrimeCount);
-        panel.add(jbtnDisplayPrime);
-
-        add(jpb, BorderLayout.NORTH);
-        add(new JScrollPane(jtaResult), BorderLayout.CENTER);
-        add(panel, BorderLayout.SOUTH);
-
-        jbtnDisplayPrime.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ComputePrime task =
-                        new ComputePrime(Integer.parseInt(jtfPrimeCount.getText()), jtaResult);
-
-                task.addPropertyChangeListener(new PropertyChangeListener() {
-
-                    @Override
-                    public void propertyChange(PropertyChangeEvent evt) {
-                        //判断改变的属性是否是进度，如果是则获取进度的值并显示在进度条上
-                        if("progress".equals(evt.getPropertyName())) {
-                            jpb.setValue((Integer)evt.getNewValue());
-                        }
-                    }
-                });
-
-                task.execute();     //执行
-            }
-        });
+        return byteAscii;
     }
 
-    static class ComputePrime extends SwingWorker<Integer, Integer> {
+    /**
+     * 方法二：将char直接转化为int，其值就是字符的ascii
+     *
+     * @param ch
+     * @return
+     */
+    public static byte charToByteAscii2(char ch) {
+        byte byteAscii = (byte) ch;
 
-        private int count;
-        private JTextArea result;
-
-        public ComputePrime(int count, JTextArea result) {
-            this.count = count;
-            this.result = result;
-        }
-
-        @Override
-        protected Integer doInBackground() throws Exception {
-            publishPrimeNumbers(count);
-            return 0;
-        }
-
-        //把找到的素数全部显示出来
-        @Override
-        protected void process(List<Integer> list) {
-            for(int i=0; i<list.size(); i++) {
-                result.append(list.get(i) + " ");
-            }
-            super.process(list);
-        }
-
-        private void publishPrimeNumbers(int n) {
-            int count = 0;
-            int number = 2;
-
-            while(count <= n) {
-                if(isPrime(number)) {
-                    count ++;
-                    setProgress(100 * count / n);   //设置进度
-                    publish(number);                //通过publish方法将找到的素数number发送给process方法
-                }
-
-                number ++;
-            }
-        }
-
-        public static boolean isPrime(int number) {
-            for(int divisor = 2; divisor <= number / 2; divisor++) {
-                if(number % divisor == 0) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
+        return byteAscii;
     }
 
+    /**
+     * 同理，ascii转换为char 直接int强制转换为char
+     *
+     * @param ascii
+     * @return
+     */
+    public static char byteAsciiToChar(int ascii) {
+        char ch = (char) ascii;
+        return ch;
+    }
+
+    /**
+     * 求出字符串的ASCII值和
+     * 注意，如果有中文的话，会把一个汉字用两个byte来表示，其值是负数
+     */
+    public static int SumStrAscii(String str) {
+        byte[] bytestr = str.getBytes();
+        int sum = 0;
+        for (int i = 0; i < bytestr.length; i++) {
+            sum += bytestr[i];
+        }
+        return sum;
+    }
 }

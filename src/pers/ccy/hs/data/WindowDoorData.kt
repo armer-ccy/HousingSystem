@@ -38,6 +38,17 @@ class WindowDoorData() {
         this.info4 = info4
     }
 
+    constructor(v: WindowDoorData) : this(
+        v.id,
+        v.type,
+        v.thick,
+        v.info,
+        v.info2,
+        v.info3,
+        v.info4
+    ) {
+    }
+
     constructor(str: String) : this() {
         val strArr = str.split(",")
         this.id = strArr[0].toInt()
@@ -97,5 +108,15 @@ class WindowDoorData() {
     fun allToPrint() {
         println("DoorOrWindow:" + toString())
         if (next != null) next?.allToPrint()
+    }
+
+    fun exchange(v: WindowDoorData) {
+        id = v.id
+        type = v.type
+        thick = v.thick
+        info = v.info
+        info2 = v.info2
+        info3 = v.info3
+        info4 = v.info4
     }
 }

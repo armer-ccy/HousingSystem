@@ -27,7 +27,7 @@ class CombinationUI(var combinationData: ArrayList<CombinationData>) : JPanel(),
 
     var draww = 600
     var drawh = 350
-    val jp4 = CombinationDraw(combinationData, draww - 10, drawh - 20, 2.0)
+    val jp4 = CombinationDraw(combinationData, draww - 10, drawh - 20, 1.0)
 
     companion object {
         var comData: CombinationData? = null

@@ -3,6 +3,7 @@ package pers.ccy.hs.main
 import com.borland.jbcl.layout.XYConstraints
 import com.borland.jbcl.layout.XYLayout
 import pers.ccy.hs.UI.combination.CombinationUI
+import pers.ccy.hs.UI.output.OutputUI
 import pers.ccy.hs.UI.structure.StructureUI
 import pers.ccy.hs.data.CombinationData
 import pers.ccy.hs.data.HouseData
@@ -42,6 +43,7 @@ class Main : ActionListener {
     private val openMenuItem = JMenuItem("打开（O）")
     private val saveMenuItem = JMenuItem("保存（S）")
     private val saveAsMenuItem = JMenuItem("另存为")
+    private val outputMenuItem = JMenuItem("导出")
 
     override fun actionPerformed(e: ActionEvent?) {
         val menuItem = e?.source as JMenuItem
@@ -148,6 +150,9 @@ class Main : ActionListener {
                     }
                 }
             }
+            "导出" -> {
+                OutputUI().show()
+            }
         }
 
         houseData.UpdatModel()
@@ -206,6 +211,7 @@ class Main : ActionListener {
         saveMenuItem.accelerator = KeyStroke.getKeyStroke(VK_S, CTRL_DOWN_MASK)
         fileMenu.add(saveAsMenuItem)
         saveAsMenuItem.accelerator = KeyStroke.getKeyStroke(VK_S, CTRL_DOWN_MASK + SHIFT_DOWN_MASK)
+        fileMenu.add(outputMenuItem)
 
         menuBar.add(fileMenu)
 
@@ -213,6 +219,7 @@ class Main : ActionListener {
         openMenuItem.addActionListener(this)
         saveMenuItem.addActionListener(this)
         saveAsMenuItem.addActionListener(this)
+        outputMenuItem.addActionListener(this)
 
         jf.jMenuBar = menuBar
         //jf.jMenuBar.setBounds(0,0,100,30)
@@ -249,7 +256,6 @@ class Main : ActionListener {
         jfc.fileFilter = MyFileFilter("房间构造文件(*.HSPRT)", ".HSPRT")
         jfc.fileFilter = MyFileFilter("房间组合文件(*.HSASM)", ".HSASM")
         jfc.fileFilter = MyFileFilter("房间构造文件(*.HSPRT)或房间组合文件(*.HSASM)", ".HSPRT", ".HSASM")
-
         jfc1.fileSelectionMode = 0 // 设定只能选择到文件
         jfc1.removeChoosableFileFilter(jfc.acceptAllFileFilter) // 不显示“所有文件”
         jfc1.fileFilter = MyFileFilter("房间构造文件(*.HSPRT)", ".HSPRT")

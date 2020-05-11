@@ -1,70 +1,46 @@
 package pers.ccy.hs.test
 
-import com.google.gson.GsonBuilder
-import org.dom4j.Attribute
-import org.dom4j.Element
-import org.dom4j.io.SAXReader
-import org.junit.Test
+import pers.ccy.hs.data.STLFile
 import java.io.File
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.io.RandomAccessFile
 
-/**
- * @author futao
- * Created on 2017/11/3 - 14:37.
- */
 class DOM4JTest {
+    var num = 12
+    var stlf = STLFile(12)
+    var vertices = stlf.vertices
+    var normals = stlf.normals
+    var stlPath = "C:\\Users\\ccy\\Desktop\\123.txt"
 
     init {
-        println("aaaaa")
-        val list = ArrayList<Book>()
-        var book = Book()
-
-        val saxReader = SAXReader()
-        val document = saxReader.read(File("C:\\Users\\ccy\\Desktop\\books.xml"))
-        println("aaaaa")
-        //根节点
-        val root = document.rootElement
-        //通过Element的elementIterator()方法获取迭代器
-        val elementIterator = root.elementIterator()
-        //遍历迭代器，获取根节点的子节点信息
-        for ((index, i) in elementIterator.withIndex()) {
-            val element = i as Element
-//            println(element.name)
-            println("===============开始解析第${index + 1}本书===============")
-            book = Book()
-            //遍历子节点的属性
-            i.attributes()
-                .map { it as Attribute }
-                .forEach {
-                    println(it.name + "    :   " + it.value)
-                    assignment(book, it.name, it.value)
-                }
-            println("aaaaa")
-            //遍历子节点的子节点和内容
-            for (k in i.elementIterator()) {
-                k as Element
-                println(k.name + "    :   " + k.textTrim)
-                assignment(book, k.name, k.textTrim)
+        try {
+            val f: File = File(stlPath)
+            f.delete()
+            val stl = RandomAccessFile(f, "rw")
+            stl.writeInt(-100)
+            stl.seek(0)
+            println(stl.readInt().toUInt())
+            /*for (i in 0 until 80) {
+                stl.writeByte(0x41)
             }
-            list.add(book)
-        }
-        println(GsonBuilder().serializeNulls().setPrettyPrinting().create().toJson(list))
-    }
-
-    private fun assignment(book: Book, property: String, value: String): Book {
-        when (property) {
-            "id" -> book.id = value.toInt()
-            "name" -> book.name = value
-            "author" -> book.author = value
-            "year" -> book.year = value
-            "price" -> book.price = value
-        }
-        return book
-    }
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            println("aaaaa")
-            DOM4JTest()
+            stl.writeInt(num)
+            for (i in 0 until num) {
+                for (j in 0 until 3) {
+                    stl.writeFloat(normals[3*i+j])
+                }
+                for (j in 0 until 9) {
+                    stl.writeFloat(vertices[3*i+j])
+                }
+            }*/
+            stl.close()
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
     }
+}
+fun main(){
+    DOM4JTest()
 }

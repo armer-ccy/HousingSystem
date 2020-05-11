@@ -336,7 +336,7 @@ object OpFile {
         val jfc = JFileChooser() // 文件选择器
         jfc.fileSelectionMode = 0 // 设定只能选择到文件
         jfc.removeChoosableFileFilter(jfc.acceptAllFileFilter) // 不显示“所有文件”
-        jfc.fileFilter = MyFileFilter( "房间构造文件(*.HSPRT)或房间组合文件(*.HSASM)",".HSPRT",".HSASM")
+        jfc.fileFilter = MyFileFilter("房间构造文件(*.HSPRT)或房间组合文件(*.HSASM)", ".HSPRT", ".HSASM")
         while (combinationData.count() == 0) {
             jfc.dialogTitle = "请选择一个基础房屋"
             val state = jfc.showOpenDialog(null) // 此句是打开文件选择器界面的触发语句
@@ -351,7 +351,7 @@ object OpFile {
                     ".HSASM" -> {
                         open(f, combinationData)
                     }
-                    else ->{
+                    else -> {
 
                     }
                 }
@@ -370,6 +370,29 @@ object OpFile {
                 return comb
         }
         return null
+    }
+
+    fun importToSTL(file: File, combinationData: ArrayList<CombinationData>) {
+        open(file, combinationData)
+        combinationData.forEach { it1 ->
+            var hd = it1.houseData
+            while (hd.next != null) {
+                var wd: WindowDoorData? = hd.next!!.windowDoorData
+                while (wd != null) {
+                    var wd1: WindowDoorData? = wd.next
+                    while (wd1 != null) {
+                        if (wd.info > wd1.info) {
+                            val t = WindowDoorData(wd1)
+                            wd1.exchange(wd)
+                            wd.exchange(t)
+                        }
+                        wd1 = wd1.next
+                    }
+                    wd = wd.next
+                }
+                hd = hd.next!!
+            }
+        }
     }
 
 }
