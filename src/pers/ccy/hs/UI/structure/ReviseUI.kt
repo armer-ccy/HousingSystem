@@ -39,13 +39,13 @@ class ReviseUI(houseData: HouseData, i: Int) : JDialog(), ActionListener {
     )
     private val txtfield = arrayOf(JTextField(28), JTextField(28), JTextField(28), JTextField(28))
     private val label2 = arrayOf(
-        arrayOf(JLabel("单位"), JLabel("单位")),
-        arrayOf(JLabel("单位"), JLabel("单位")),
-        arrayOf(JLabel("单位"), JLabel("单位")),
-        arrayOf(JLabel("单位"), JLabel("单位")),
-        arrayOf(JLabel("单位"), JLabel("单位"), JLabel("单位")),
-        arrayOf(JLabel("单位"), JLabel("单位"), JLabel("单位")),
-        arrayOf(JLabel("单位"), JLabel("单位"), JLabel("单位"), JLabel("单位"))
+        arrayOf(JLabel("度"), JLabel("分米")),
+        arrayOf(JLabel("度"), JLabel("分米")),
+        arrayOf(JLabel("分米"), JLabel("分米")),
+        arrayOf(JLabel("分米"), JLabel("分米")),
+        arrayOf(JLabel("度"), JLabel("分米"), JLabel("度")),
+        arrayOf(JLabel("度"), JLabel("分米"), JLabel("度")),
+        arrayOf(JLabel("分米"), JLabel("分米"), JLabel("分米"), JLabel("分米"))
     )
 
     private val bttn = JButton("确定")

@@ -41,10 +41,10 @@ class ReviseWDUI(houseData: HouseData, i: Int, Wid: Int) : JDialog(), ActionList
         )
     )
     val label2 = arrayOf(
-        arrayOf(JLabel("单位"), JLabel("单位"), JLabel("单位"), JLabel("单位")),
-        arrayOf(JLabel("单位"), JLabel("单位"), JLabel("单位"), JLabel("单位")),
-        arrayOf(JLabel("单位"), JLabel("单位"), JLabel("单位"), JLabel("单位"), JLabel("单位")),
-        arrayOf(JLabel("单位"), JLabel("单位"), JLabel("单位"), JLabel("单位"), JLabel("单位"))
+        arrayOf(JLabel("分米"), JLabel("分米"), JLabel("分米"), JLabel("分米")),
+        arrayOf(JLabel("分米"), JLabel("度"), JLabel("度"), JLabel("分米")),
+        arrayOf(JLabel("分米"), JLabel("分米"), JLabel("分米"), JLabel("分米"), JLabel("分米")),
+        arrayOf(JLabel("分米"), JLabel("度"), JLabel("度"), JLabel("分米"), JLabel("分米"))
     )
 
     val txtfield = arrayOf(JTextField(28), JTextField(28), JTextField(28), JTextField(28), JTextField(28))

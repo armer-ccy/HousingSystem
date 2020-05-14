@@ -7,7 +7,7 @@ import javax.swing.JLabel
 class JPanel_Curve1 : JPanel_Curve0() {
 
     val label = arrayOf(JLabel("圆心绝对角度："), JLabel("圆心相对距离："), JLabel("扇形度数："))
-    val label2 = arrayOf(JLabel("单位"), JLabel("单位"), JLabel("单位"))
+    val label2 = arrayOf(JLabel("度"), JLabel("分米"), JLabel("度"))
 
     init {
         this.layout = null

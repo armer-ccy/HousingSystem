@@ -7,7 +7,7 @@ import javax.swing.JLabel
 class JPanel_StraightLine1 : JPanel_StraightLine0() {
 
     val label = arrayOf(JLabel("绝对角度："), JLabel("相对距离："))
-    val label2 = arrayOf(JLabel("单位"), JLabel("单位"))
+    val label2 = arrayOf(JLabel("度"), JLabel("分米"))
 
     init {
         this.layout = null

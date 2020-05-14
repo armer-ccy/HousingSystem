@@ -11,8 +11,8 @@ class JPanel_Door(houseData: HouseData) : JPanel(), ActionListener {
         arrayOf(JLabel("门所在墙："), JLabel("门的厚度："), JLabel("离墙边角度："), JLabel("门角度："), JLabel("门高度："))
     )
     val label2 = arrayOf(
-        arrayOf(JLabel("单位"), JLabel("单位"), JLabel("单位"), JLabel("单位")),
-        arrayOf(JLabel("单位"), JLabel("单位"), JLabel("单位"), JLabel("单位"))
+        arrayOf(JLabel("分米"), JLabel("分米"), JLabel("分米"), JLabel("分米")),
+        arrayOf(JLabel("分米"), JLabel("度"), JLabel("度"), JLabel("分米"))
     )
     val cmb: JComboBox<String> = JComboBox<String>()
     val txtfield = arrayOf(JTextField(28), JTextField(28), JTextField(28), JTextField(28))
