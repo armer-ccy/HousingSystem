@@ -80,7 +80,7 @@ class STLFile() {
             0 -> {
             }
             1 -> {
-                add(p1x, p1y, p2x, p2y, (low + high) / 3 - thick, (low + high) / 3 + thick)
+                add(p1x, p1y, p2x, p2y, (low + high) / 2.5 - thick, (low + high) / 2.5 + thick)
             }
             2 -> {
                 add(p1x, p1y, p2x, p2y, (low + high) / 2 - thick, (low + high) / 2 + thick)

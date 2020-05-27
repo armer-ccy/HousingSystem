@@ -22,7 +22,7 @@ class OutputUI() : JDialog(), ActionListener {
         JLabel("门窗样式："), JLabel("房间高度：")
     )
     val txtfield = arrayOf(JTextField(28))
-    val label2 = arrayOf(JLabel("单位"))
+    val label2 = arrayOf(JLabel("分米"))
     val jbtn = JButton("确定")
     val cmb: JComboBox<String> = JComboBox<String>()
 

@@ -50,12 +50,16 @@ class JPanel_Door(houseData: HouseData) : JPanel(), ActionListener {
                 this.add(it)
             }
         }
+        label[0].forEach { it.isVisible = true }
+        label[1].forEach { it.isVisible = false }
         label2.forEach {
             it.forEachIndexed { index, it ->
                 it.setBounds(155, 45 + index * 30, 30, 30)
                 this.add(it)
             }
         }
+        label2[0].forEach { it.isVisible = true }
+        label2[1].forEach { it.isVisible = false }
 
         jbtn.setBounds(70, 210, 60, 30)
         this.add(jbtn)

@@ -11,7 +11,7 @@ class JPanel_Curve2 : JPanel_Curve0() {
 
     init {
         this.layout = null
-        this.border = (BorderFactory.createTitledBorder("0"))
+        this.border = (BorderFactory.createTitledBorder("相对角度圆心"))
         label.forEachIndexed { index, it ->
             it.setBounds(5, 15 + index * 30, 75, 30)
             this.add(it)

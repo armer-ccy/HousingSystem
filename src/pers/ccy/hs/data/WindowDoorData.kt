@@ -4,13 +4,13 @@ import javax.swing.DefaultComboBoxModel
 import javax.swing.DefaultListModel
 
 class WindowDoorData() {
-    var id = 0
-    var type = 0
-    var thick: Double = .0
-    var info: Double = .0
-    var info2: Double = .0
-    var info3: Double = .0
-    var info4: Double = .0
+    var id = 0              //门窗标识号
+    var type = 0            //门窗类别
+    var thick: Double = .0  //厚度
+    var info: Double = .0   //信息1
+    var info2: Double = .0  //信息2
+    var info3: Double = .0  //信息3
+    var info4: Double = .0  //信息4
     var next: WindowDoorData? = null
 
     companion object {

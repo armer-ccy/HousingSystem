@@ -81,8 +81,8 @@ class Main : ActionListener {
                         UpdatModel(combinationData)
                         CombinationData.modelNew.removeAllElements()
                         CombinationUI.comData?.UpdatCBModel()
-                        jf.repaint()
                     }
+                    jf.repaint()
                 }
             }
             "保存（S）" -> {

@@ -8,14 +8,14 @@ import javax.swing.DefaultListModel
 import kotlin.math.*
 
 class CombinationData(var houseData: HouseData) {
-    var door: ArrayList<Door> = ArrayList()
-    lateinit var center: Point
-    var id = 0
-    var name = ""
-    var path = ""
-    var angle = .0
-    var start = Point(.0, .0)
-    var connect = ""
+    var door: ArrayList<Door> = ArrayList()	//门的链表
+    lateinit var center: Point				//房间中心点
+    var id = 0							    //房间索引
+    var name = ""							//房间的名字
+    var path = ""							//房间的储存路径
+    var angle = .0							//房间倾斜角度
+    var start = Point(.0, .0)			//房间的原点所在
+    var connect = ""						//房间与总房间的连接信息
 
     companion object {
         val model = DefaultListModel<String>()

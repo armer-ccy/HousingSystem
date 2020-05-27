@@ -4,6 +4,7 @@ import org.dom4j.Element
 import org.dom4j.io.SAXReader
 import pers.ccy.hs.UI.combination.CombinationUI
 import pers.ccy.hs.data.*
+import pers.ccy.hs.operation.OpCombination.connect
 import java.io.File
 import javax.swing.JFileChooser
 import javax.swing.JFrame
@@ -181,38 +182,6 @@ object OpFile {
         }
     }
 
-    fun connect(combinationData: ArrayList<CombinationData>, id: Int, a: Door, b: Door) {
-        combinationData[combinationData.count() - 1].id = combinationData.count()
-        a.isused = true
-        b.isused = true
-        //a.point[3]->b.point[0]
-        //求角度
-        combinationData[combinationData.count() - 1].angle =
-            -OpCombination.VectorAngle(
-                a.point[0]!!.sub(a.point[1]!!),
-                b.point[1]!!.sub(b.point[0]!!)
-            ) + combinationData[id - 1].angle
-        //求起始
-        //https://www.cnblogs.com/herd/p/11620760.html
-        val angle = combinationData[combinationData.count() - 1].angle
-        val angle1 = combinationData[id - 1].angle
-        var real = a.point[3]!!
-        real = Point(
-            (real.x) * cos(angle1) - (real.y) * sin(angle1),
-            (real.x) * sin(angle1) + (real.y) * cos(angle1)
-        )
-        real = Point(
-            real.x + combinationData[id - 1].start.x,
-            real.y + combinationData[id - 1].start.y
-        )
-        val m = real.sub(b.point[0]!!)
-        val xx: Double =
-            (m.x - real.x) * cos(angle) - (m.y - real.y) * sin(angle) + real.x
-        val yy: Double =
-            (m.x - real.x) * sin(angle) + (m.y - real.y) * cos(angle) + real.y
-        combinationData[combinationData.count() - 1].start = Point(xx, yy)
-    }
-
     fun save_before(houseData: HouseData, jf: JFrame): Boolean {
         if (isHasDoor(houseData)) return true
         val worr = JOptionPane.showOptionDialog(
@@ -365,7 +334,7 @@ object OpFile {
         val state = jfc.showOpenDialog(null) // 此句是打开文件选择器界面的触发语句
         if (state != 1) {
             val f = jfc.selectedFile // f为选择到的文件
-            var comb = OpFile.import(f)
+            var comb = import(f)
             if (isHasDoor(comb))
                 return comb
         }

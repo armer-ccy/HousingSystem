@@ -7,6 +7,7 @@ import pers.ccy.hs.data.Point
 import pers.ccy.hs.operation.OpCombination
 import pers.ccy.hs.operation.OpCombination.UpdatModel
 import pers.ccy.hs.operation.OpCombination.VectorAngle
+import pers.ccy.hs.operation.OpCombination.connect
 import pers.ccy.hs.operation.OpFile
 import pers.ccy.hs.operation.OpFile.importOpen
 import java.awt.event.ActionEvent
@@ -76,7 +77,7 @@ class CombinationSet(combinationData: ArrayList<CombinationData>) : JPanel(), Ac
                 val b = CombinationUI.comData!!.selectDoor(str.substring(0, str.indexOf("号")).toInt())
                 if (a.length == b.length && a.thick == b.thick) {
                     combinationData.add(CombinationUI.comData!!)
-                    OpFile.connect(combinationData, Arr[0].toInt(), a, b)
+                    connect(combinationData, Arr[0].toInt(), a, b)
                     /*combinationData.forEach {
                         println("id:${it.id},angle:${it.angle},startx:${it.start.x},starty:${it.start.y}")
                     }*/

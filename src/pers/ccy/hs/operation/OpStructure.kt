@@ -8,8 +8,8 @@ import kotlin.math.pow
 
 object OpStructure {
     fun DisplayHiding(i: Int, vararg args: JPanel) {
-        for (j in 0..args.size - 1)
-            args[j].isVisible = false
+        for (element in args)
+            element.isVisible = false
         args[i].isVisible = true
         //args[i].repaint()
     }
@@ -58,7 +58,7 @@ object OpStructure {
             if ((a_min < z_max && z_max < a_max) || (a_min < z_min && z_min < a_max) || (z_min < a_max && a_max < z_max) || (z_min < a_min && a_min < z_max)) {
 
                 bj = false
-                println("aaa")
+                //println("aaa")
             }
         } else if (abc * abd < 0 && cda * cdb < 0) {
             bj = false

@@ -248,8 +248,8 @@ class JPanel_Draw(val houseData: HouseData, val w: Int, val h: Int) : JPanel() {
             this.parent.repaint()
         }
         //闭合
-        graphics.color = Color.BLACK
-        //graphics.drawLine(w_mid,h_mid,l[len][2].toInt(),l[len][3].toInt())
+        graphics.color = Color.GREEN
+        graphics.drawLine(w_mid,h_mid,l[len][2].toInt(),l[len][3].toInt())
         /*graphics.color = Color.RED
         graphics.fill3DRect(a, b, 100, 100, true)
         a+=10

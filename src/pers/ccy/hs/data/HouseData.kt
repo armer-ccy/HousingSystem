@@ -4,15 +4,15 @@ import javax.swing.DefaultComboBoxModel
 import javax.swing.DefaultListModel
 
 class HouseData() {
-    var id = 0
-    var type = 0
-    var type2 = 0
-    var info = .0
-    var info2 = .0
-    var info3 = .0
-    var info4 = .0
+    var id = 0      //墙索引号
+    var type = 0    //墙类别
+    var type2 = 0   //墙的画法
+    var info = .0   //信息1
+    var info2 = .0  //信息2
+    var info3 = .0  //信息3
+    var info4 = .0  //信息4
     var next: HouseData? = null
-    var windowDoorData: WindowDoorData? = null
+    var windowDoorData: WindowDoorData? = null  //门窗信息
 
     companion object {
         val model = DefaultListModel<String>()
