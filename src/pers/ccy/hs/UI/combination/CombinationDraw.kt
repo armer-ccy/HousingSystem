@@ -2,6 +2,8 @@ package pers.ccy.hs.UI.combination
 
 import pers.ccy.hs.data.CombinationData
 import pers.ccy.hs.data.HouseData
+import pers.ccy.hs.data.Point
+import pers.ccy.hs.operation.OpCombination
 import pers.ccy.hs.operation.OpStructure.CCircle
 import pers.ccy.hs.operation.OpStructure.getDis
 import java.awt.Color
@@ -188,7 +190,8 @@ class CombinationDraw(var combinationData: ArrayList<CombinationData>, val w: In
                     2 -> {
                         var rx = .0
                         var ry = .0
-                        var angle3 = .0
+                        var angle1 = .0
+                        var angle2 = .0
                         when (hd.type2) {
                             //https://www.cnblogs.com/fengliu-/p/10944151.html 在平面中，一个点绕任意点旋转θ度后的点的坐标
                             0 -> {
@@ -201,7 +204,7 @@ class CombinationDraw(var combinationData: ArrayList<CombinationData>, val w: In
                                 val xx = (l[len][2] - rx) * cos(angle_hd) - (l[len][3] - ry) * sin(angle_hd) + rx
                                 val yy = (l[len][2] - rx) * sin(angle_hd) + (l[len][3] - ry) * cos(angle_hd) + ry
                                 l.add(arrayOf(l[len][2], l[len][3], xx, yy, hd.id.toDouble()))
-                                angle3= -hd.info3
+                                angle2= -hd.info3
                             }
                             1 -> {
                                 val a = (l[len][3] - l[len][1]).toDouble()
@@ -217,7 +220,7 @@ class CombinationDraw(var combinationData: ArrayList<CombinationData>, val w: In
                                 val xx = (l[len][2] - rx) * cos(angle_hd) - (l[len][3] - ry) * sin(angle_hd) + rx
                                 val yy = (l[len][2] - rx) * sin(angle_hd) + (l[len][3] - ry) * cos(angle_hd) + ry
                                 l.add(arrayOf(l[len][2], l[len][3], xx, yy, hd.id.toDouble()))
-                                angle3= -hd.info3
+                                angle2= -hd.info3
                             }
                             2 -> {
                                 //https://blog.csdn.net/u011030529/article/details/84779566 三点确定一个圆的计算方法
@@ -252,20 +255,26 @@ class CombinationDraw(var combinationData: ArrayList<CombinationData>, val w: In
                                         hd.id.toDouble()
                                     )
                                 )
+                                val angle = OpCombination.VectorAngle(
+                                    Point(l[len][2] - (w_mid + hd.info * p), l[len][3] - (h_mid - hd.info2 * p)),
+                                    Point(l[len][2] - (w_mid + hd.info3 * p), l[len][3] - (h_mid - hd.info4 * p))
+                                )
+                                angle1 = 90 + atan2((rx - l[len][2]), (ry - l[len][3])) * 180 / PI
+                                if (angle1 < 0) angle1 += 360
+                                val anglet =
+                                    90 + atan2((rx - (w_mid + hd.info3 * p)), (ry - (h_mid - hd.info4 * p))) * 180 / PI
+                                if (anglet < 0) angle2 += 360
+                                angle2 = anglet - angle1
+                                if (angle2 * angle > 0)
+                                    angle2 = if (angle2 > 0) angle2 - 360
+                                    else angle2 + 360
                             }
                         }
                         len++
                         val d =
                             sqrt(((rx - l[len][0]) * (rx - l[len][0]) + (ry - l[len][1]) * (ry - l[len][1])))
-                        var angle1 = 90 + atan2((rx - l[len][0]), (ry - l[len][1])) * 180 / PI
+                        angle1 = 90 + atan2((rx - l[len][0]), (ry - l[len][1])) * 180 / PI
                         if (angle1 < 0) angle1 += 360
-                        var angle2 = 90 + atan2((rx - l[len][2]), (ry - l[len][3])) * 180 / PI
-                        if (angle2 < 0) angle2 += 360
-                        if (angle3 == .0) {
-                            angle3 = angle1 - angle2
-                            if (angle3 > 180) angle3 -= 180
-                            if (angle3 < -180) angle3 += 180
-                        }
                         //https://blog.csdn.net/wangbowj123/article/details/72785849 JAVA 基本绘图——利用JFrame JPanel 绘制扇形
                         //graphics.drawArc(x：圆心-width/2, y：圆心-hight/2, width：x轴直径, hight：y轴直径, startAngle：启示角度（x轴正半轴方向为0）, arcAngle：扫过角度（逆时针为正）)
                         graphics.drawArc(
@@ -274,7 +283,7 @@ class CombinationDraw(var combinationData: ArrayList<CombinationData>, val w: In
                             (d * 2).toInt(),
                             (d * 2).toInt(),
                             angle1.toInt(),
-                            angle3.toInt()
+                            angle2.toInt()
                         )
 
                         //门窗

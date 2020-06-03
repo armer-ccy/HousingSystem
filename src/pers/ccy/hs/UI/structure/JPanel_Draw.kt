@@ -1,6 +1,8 @@
 package pers.ccy.hs.UI.structure
 
 import pers.ccy.hs.data.HouseData
+import pers.ccy.hs.data.Point
+import pers.ccy.hs.operation.OpCombination.VectorAngle
 import pers.ccy.hs.operation.OpStructure.CCircle
 import pers.ccy.hs.operation.OpStructure.Collision
 import pers.ccy.hs.operation.OpStructure.Remove
@@ -31,7 +33,7 @@ class JPanel_Draw(val houseData: HouseData, val w: Int, val h: Int) : JPanel() {
         var len = 0
         var hd: HouseData? = houseData
         graphics.drawLine(l[len][0].toInt(), l[len][1].toInt(), l[len][2].toInt(), l[len][3].toInt())
-        println("-------------------------------------------------")
+
         loop@ while (hd != null) {
             graphics.color = Color.BLACK
             when (hd.type) {
@@ -125,7 +127,8 @@ class JPanel_Draw(val houseData: HouseData, val w: Int, val h: Int) : JPanel() {
                 2 -> {
                     var rx = .0
                     var ry = .0
-                    var angle3 = .0
+                    var angle1 = .0
+                    var angle2 = .0
                     when (hd.type2) {
                         //https://www.cnblogs.com/fengliu-/p/10944151.html 在平面中，一个点绕任意点旋转θ度后的点的坐标
                         0 -> {
@@ -138,7 +141,7 @@ class JPanel_Draw(val houseData: HouseData, val w: Int, val h: Int) : JPanel() {
                             val xx = (l[len][2] - rx) * cos(angle_hd) - (l[len][3] - ry) * sin(angle_hd) + rx
                             val yy = (l[len][2] - rx) * sin(angle_hd) + (l[len][3] - ry) * cos(angle_hd) + ry
                             l.add(arrayOf(l[len][2], l[len][3], xx, yy, hd.id.toDouble()))
-                            angle3= -hd.info3
+                            angle2 = -hd.info3
                         }
                         1 -> {
                             val a = (l[len][3] - l[len][1]).toDouble()
@@ -154,7 +157,7 @@ class JPanel_Draw(val houseData: HouseData, val w: Int, val h: Int) : JPanel() {
                             val xx = (l[len][2] - rx) * cos(angle_hd) - (l[len][3] - ry) * sin(angle_hd) + rx
                             val yy = (l[len][2] - rx) * sin(angle_hd) + (l[len][3] - ry) * cos(angle_hd) + ry
                             l.add(arrayOf(l[len][2], l[len][3], xx, yy, hd.id.toDouble()))
-                            angle3= -hd.info3
+                            angle2 = -hd.info3
                         }
                         2 -> {
                             //https://blog.csdn.net/u011030529/article/details/84779566 三点确定一个圆的计算方法
@@ -177,24 +180,25 @@ class JPanel_Draw(val houseData: HouseData, val w: Int, val h: Int) : JPanel() {
                                     hd.id.toDouble()
                                 )
                             )
+                            val angle = VectorAngle(
+                                Point(l[len][2] - (w_mid + hd.info), l[len][3] - (h_mid - hd.info2)),
+                                Point(l[len][2] - (w_mid + hd.info3), l[len][3] - (h_mid - hd.info4))
+                            )
+                            angle1 = 90 + atan2((rx - l[len][2]), (ry - l[len][3])) * 180 / PI
+                            if (angle1 < 0) angle1 += 360
+                            val anglet = 90 + atan2((rx - (w_mid + hd.info3)), (ry - (h_mid - hd.info4))) * 180 / PI
+                            if (anglet < 0) angle2 += 360
+                            angle2 = anglet - angle1
+                            if (angle2 * angle > 0)
+                                angle2 = if (angle2 > 0) angle2 - 360
+                                else angle2 + 360
                         }
                     }
                     len++
                     val d =
                         sqrt(((rx - l[len][0]) * (rx - l[len][0]) + (ry - l[len][1]) * (ry - l[len][1])))
-                    var angle1 = 90 + atan2((rx - l[len][0]), (ry - l[len][1])) * 180 / PI
-                    //angle1 = if (rx == l[len][0]) if (ry > l[len][1]) 90.0 else -90.0
-                    //else 90 + atan2((rx - l[len][0]), (ry - l[len][1])) * 180 / PI
+                    angle1 = 90 + atan2((rx - l[len][0]), (ry - l[len][1])) * 180 / PI
                     if (angle1 < 0) angle1 += 360
-                    var angle2 = 90 + atan2((rx - l[len][2]), (ry - l[len][3])) * 180 / PI
-                    //angle2 = if (rx == l[len][2]) if (ry > l[len][3]) 90.0 else -90.0
-                    //else 90 + atan2((rx - l[len][2]), (ry - l[len][3])) * 180 / PI
-                    if (angle2 < 0) angle2 += 360
-                    if (angle3 == .0) {
-                        angle3 = angle1 - angle2
-                        if (angle3 > 180) angle3 -= 180
-                        if (angle3 < -180) angle3 += 180
-                    }
                     //https://blog.csdn.net/wangbowj123/article/details/72785849 JAVA 基本绘图——利用JFrame JPanel 绘制扇形
                     //graphics.drawArc(x：圆心-width/2, y：圆心-hight/2, width：x轴直径, hight：y轴直径, startAngle：启示角度（x轴正半轴方向为0）, arcAngle：扫过角度（逆时针为正）)
                     graphics.drawArc(
@@ -203,16 +207,17 @@ class JPanel_Draw(val houseData: HouseData, val w: Int, val h: Int) : JPanel() {
                         (d * 2).toInt(),
                         (d * 2).toInt(),
                         angle1.toInt(),
-                        angle3.toInt()
+                        angle2.toInt()
                     )
 
                     /*println("${l[len][0]}, ${l[len][1]}, ${l[len][2]}, ${l[len][3]}")
                     println("${l[len][0].toInt()}, ${l[len][1].toInt()}, ${l[len][2].toInt()}, ${l[len][3].toInt()}")
                     println("${l[len][0].toInt()-245}, ${l[len][1].toInt()-165}, ${l[len][2].toInt()-245}, ${l[len][3].toInt()-165}")*/
-                    //println("rx=${rx},ry=${ry},d=$d,angle1=${angle1},angle2=${angle2},angle3=${angle3}")
+                    //println("rx=${rx},ry=${ry},d=$d,angle1=${angle1},angle2=${angle2}")
                     //始末点
                     //graphics.drawLine(l[len][0].toInt(), l[len][1].toInt(), l[len][2].toInt(), l[len][3].toInt())
                     //圆心
+                    //graphics.color = Color.GREEN
                     //graphics.drawLine(l[len][0].toInt(), l[len][1].toInt(), rx.toInt(), ry.toInt())
 
                     //门窗
@@ -249,7 +254,7 @@ class JPanel_Draw(val houseData: HouseData, val w: Int, val h: Int) : JPanel() {
         }
         //闭合
         graphics.color = Color.GREEN
-        graphics.drawLine(w_mid,h_mid,l[len][2].toInt(),l[len][3].toInt())
+        graphics.drawLine(w_mid, h_mid, l[len][2].toInt(), l[len][3].toInt())
         /*graphics.color = Color.RED
         graphics.fill3DRect(a, b, 100, 100, true)
         a+=10

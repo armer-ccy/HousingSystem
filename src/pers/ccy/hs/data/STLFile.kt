@@ -9,30 +9,6 @@ class STLFile() {
     var vertices = ArrayList<Float>()// 点 length=[faces * 3 * 3]//3顶点*3xyz
     var normals = ArrayList<Float>()// 三角面片法向量的3个分量值数据length=[faces * 3]
 
-    constructor(facetNum: Int) : this() {
-        this.facetNum = facetNum
-        for (i in 1..facetNum) {
-            normals.addAll(listOf(0f, 0f, 0f))
-        }
-        //实验正方体
-        vertices.addAll(
-            listOf(
-                0f, 0f, 0f, 0f, 100f, 0f, 0f, 0f, 100f,
-                0f, 100f, 0f, 0f, 0f, 100f, 0f, 100f, 100f,
-                0f, 100f, 0f, 0f, 100f, 100f, 100f, 100f, 0f,
-                100f, 100f, 100f, 0f, 100f, 100f, 100f, 100f, 0f,
-                0f, 0f, 100f, 0f, 100f, 100f, 100f, 0f, 100f,
-                0f, 100f, 100f, 100f, 100f, 100f, 100f, 0f, 100f,
-                100f, 100f, 0f, 100f, 0f, 100f, 100f, 0f, 0f,
-                100f, 100f, 0f, 100f, 100f, 100f, 100f, 0f, 100f,
-                0f, 0f, 0f, 0f, 0f, 100f, 100f, 0f, 0f,
-                100f, 0f, 100f, 0f, 0f, 100f, 100f, 0f, 0f,
-                0f, 0f, 0f, 0f, 100f, 0f, 100f, 0f, 0f,
-                0f, 100f, 0f, 100f, 0f, 0f, 100f, 100f, 0f
-            )
-        )
-    }
-
     fun add(
         p1x: Double, p1y: Double,
         p2x: Double, p2y: Double,

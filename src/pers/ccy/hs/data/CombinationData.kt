@@ -129,14 +129,6 @@ class CombinationData(var houseData: HouseData) {
                             l.add(arrayOf(l[len][2], l[len][3], xx, yy, hd.id.toDouble()))
                         }
                         2 -> {
-                            val xy = OpStructure.CCircle(
-                                l[len][2],
-                                l[len][3],
-                                hd.info,
-                                hd.info2,
-                                hd.info3,
-                                hd.info4
-                            )
                             l.add(
                                 arrayOf(
                                     l[len][2],

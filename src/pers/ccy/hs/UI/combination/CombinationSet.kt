@@ -3,19 +3,13 @@ package pers.ccy.hs.UI.combination
 import com.borland.jbcl.layout.XYConstraints
 import com.borland.jbcl.layout.XYLayout
 import pers.ccy.hs.data.CombinationData
-import pers.ccy.hs.data.Point
-import pers.ccy.hs.operation.OpCombination
 import pers.ccy.hs.operation.OpCombination.UpdatModel
-import pers.ccy.hs.operation.OpCombination.VectorAngle
 import pers.ccy.hs.operation.OpCombination.connect
-import pers.ccy.hs.operation.OpFile
 import pers.ccy.hs.operation.OpFile.importOpen
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
 import java.awt.event.ItemListener
 import javax.swing.*
-import kotlin.math.cos
-import kotlin.math.sin
 
 
 class CombinationSet(combinationData: ArrayList<CombinationData>) : JPanel(), ActionListener {
